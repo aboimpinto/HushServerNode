@@ -1,0 +1,6 @@
+[submodule "Modules/Olimpo.BootstrapperManager"]
+	path = Modules/Olimpo.BootstrapperManager
+	url = git@github.com:aboimpinto/Olimpo.BootstrapperManager.git
+[submodule "Modules/Olimpo.EventAggregatorManager"]
+	path = Modules/Olimpo.EventAggregatorManager
+	url = git@github.com:aboimpinto/Olimpo.EventAggregatorManager.git

@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Olimpo;
 
 namespace HushServerNode;
 
@@ -29,9 +30,9 @@ public class Program
                 // services.AddTransient<TransactionBaseConverter>();
 
                 services.AddHostedService<Worker>();
-            });
-            // .RegisterEventAggregatorManager()
-            // .RegisterBootstrapperManager()
+            })
+            .RegisterBootstrapperManager()
+            .RegisterEventAggregatorManager();
             // .RegisterApplicationSettings()
             // .RegisterTcpServer()
             // .RegisterServer()
