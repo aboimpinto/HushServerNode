@@ -4,3 +4,6 @@
 [submodule "Modules/Olimpo.EventAggregatorManager"]
 	path = Modules/Olimpo.EventAggregatorManager
 	url = git@github.com:aboimpinto/Olimpo.EventAggregatorManager.git
+[submodule "Modules/Olimpo.TcpServerManager"]
+	path = Modules/Olimpo.TcpServerManager
+	url = git@github.com:aboimpinto/Olimpo.TcpServerManager.git

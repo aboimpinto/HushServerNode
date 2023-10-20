@@ -32,7 +32,8 @@ public class Program
                 services.AddHostedService<Worker>();
             })
             .RegisterBootstrapperManager()
-            .RegisterEventAggregatorManager();
+            .RegisterEventAggregatorManager()
+            .RegisterTcpServer();
             // .RegisterApplicationSettings()
             // .RegisterTcpServer()
             // .RegisterServer()
