@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventAggregatorManager", "M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpServerManager", "Modules\Olimpo.TcpServerManager\TcpServerManager.csproj", "{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ApplicationSettingsService", "Services\HushServerNode.ApplicationSettingsService\HushServerNode.ApplicationSettingsService.csproj", "{A310A282-1F8F-41FD-AB64-C8F8B96BA067}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ApplicationSettingsService.Model", "Services\HushServerNode.ApplicationSettingsService.Model\HushServerNode.ApplicationSettingsService.Model.csproj", "{83ABF525-741F-4101-B0FB-9F19F8165AD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,10 +44,20 @@ Global
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{25C27339-9E26-4AC8-9549-53999DEC2C93} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{025CF167-8F50-4EF2-8919-5316FFDA3012} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
+		{A310A282-1F8F-41FD-AB64-C8F8B96BA067} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
+		{83ABF525-741F-4101-B0FB-9F19F8165AD6} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 	EndGlobalSection
 EndGlobal
