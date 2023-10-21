@@ -7,3 +7,9 @@
 [submodule "Modules/Olimpo.TcpServerManager"]
 	path = Modules/Olimpo.TcpServerManager
 	url = git@github.com:aboimpinto/Olimpo.TcpServerManager.git
+[submodule "Modules/Olimpo.SigningManager"]
+	path = Modules/Olimpo.SigningManager
+	url = git@github.com:aboimpinto/Olimpo.SigningManager.git
+[submodule "Modules/Olimpo.EncryptingManager"]
+	path = Modules/Olimpo.EncryptingManager
+	url = git@github.com:aboimpinto/Olimpo.EncryptingManager.git

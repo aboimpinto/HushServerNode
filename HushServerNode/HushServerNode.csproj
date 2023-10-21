@@ -22,6 +22,9 @@
     <ProjectReference Include="..\Modules\Olimpo.EventAggregatorManager\EventAggregatorManager.csproj" />
     <ProjectReference Include="..\Modules\Olimpo.TcpServerManager\TcpServerManager.csproj" />
     <ProjectReference Include="..\Services\HushServerNode.ApplicationSettingsService\HushServerNode.ApplicationSettingsService.csproj" />
+    <ProjectReference Include="..\Services\HushServerNode.ServerService\HushServerNode.ServerService.csproj" />
+    <ProjectReference Include="..\Modules\Olimpo.SigningManager\SigningManager.csproj" />
+    <ProjectReference Include="..\Modules\Olimpo.EncryptingManager\EncryptingManager.csproj" />
   </ItemGroup>
 
 </Project>
