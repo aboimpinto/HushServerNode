@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
-using HushServerNode.ApplicationSettingsService;
 
 namespace HushServerNode;
 
@@ -35,7 +34,8 @@ public class Program
             .RegisterBootstrapperManager()
             .RegisterEventAggregatorManager()
             .RegisterTcpServer()
-            .RegisterApplicationSettingsService();
+            .RegisterApplicationSettingsService()
+            .RegisterBlockchainService();
             // .RegisterApplicationSettings()
             // .RegisterTcpServer()
             // .RegisterServer()

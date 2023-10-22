@@ -1,9 +1,10 @@
-﻿using HushServerNode.Model;
+﻿using HushServerNode.ApplicationSettingsService;
+using HushServerNode.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
 
-namespace HushServerNode.ApplicationSettingsService;
+namespace HushServerNode;
 
 public static class ApplicationSettingsHostBuilder
 {
@@ -15,7 +16,7 @@ public static class ApplicationSettingsHostBuilder
 
             services.AddSingleton<IStackerInfo, StackerInfo>();
             services.AddSingleton<IServerInfo, ServerInfo>();
-            services.AddTransient<IApplicationSettingsService, ApplicationSettingsService>();
+            services.AddTransient<IApplicationSettingsService, ApplicationSettingsService.ApplicationSettingsService>();
         });
 
         return builder;

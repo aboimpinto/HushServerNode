@@ -19,7 +19,6 @@ or
 # Remove a submodule
 
 According with this StackOverflow: https://stackoverflow.com/questions/1260748/how-do-i-remove-a-submodule
-just nee to run the command
 
 ```
     $ git rm <path-to-submodule>

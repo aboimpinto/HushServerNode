@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SigningManager", "Modules\O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncryptingManager", "Modules\Olimpo.EncryptingManager\EncryptingManager.csproj", "{48F7D346-80FF-44AA-8A05-6763457BE278}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.BlockchainService", "Services\HushServerNode.BlockchainService\HushServerNode.BlockchainService.csproj", "{446CBD5E-2DEF-48E9-8161-8184C74A30AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{48F7D346-80FF-44AA-8A05-6763457BE278}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48F7D346-80FF-44AA-8A05-6763457BE278}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48F7D346-80FF-44AA-8A05-6763457BE278}.Release|Any CPU.Build.0 = Release|Any CPU
+		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{25C27339-9E26-4AC8-9549-53999DEC2C93} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
@@ -80,5 +86,6 @@ Global
 		{25C2CFDC-EFC6-4A29-B1FA-3017B95F5E3A} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 		{F4F3272B-9021-47B7-8924-3196C355460E} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{48F7D346-80FF-44AA-8A05-6763457BE278} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
+		{446CBD5E-2DEF-48E9-8161-8184C74A30AD} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 	EndGlobalSection
 EndGlobal
