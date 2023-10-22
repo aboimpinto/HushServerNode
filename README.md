@@ -26,3 +26,6 @@ just nee to run the command
 ```
 
 or follow the guide here: https://gist.github.com/myusuf3/7f645819ded92bda6677
+
+# Basic arquitecture
+![image](https://github.com/aboimpinto/HushServerNode/assets/1231687/d57c3c98-26a2-41ed-bcfa-ef7ce7875895)
