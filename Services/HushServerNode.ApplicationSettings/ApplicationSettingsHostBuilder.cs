@@ -1,9 +1,9 @@
-﻿using HushServerNode.ApplicationSettingsService;
+﻿using HushServerNode.ApplicationSettings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
 
-namespace HushServerNode.ApplicationSettings;
+namespace HushServerNode;
 
 public static class ApplicationSettingsHostBuilder
 {

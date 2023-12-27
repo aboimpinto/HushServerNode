@@ -1,4 +1,4 @@
-﻿namespace HushServerNode.ApplicationSettingsService.Model;
+﻿namespace HushServerNode.ApplicationSettings.Model;
 
 public class ServerInfo 
 {

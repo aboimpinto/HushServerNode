@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using HushServerNode.ApplicationSettingsService.Model;
+using HushServerNode.ApplicationSettings.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Olimpo;
@@ -9,12 +9,16 @@ namespace HushServerNode.ApplicationSettings;
 public class ApplicationSettingsService : IApplicationSettingsService, IBootstrapper
 {
     private const string ApplicationSettingsFileName = "ApplicationSettings.json";
-    private ServerInfo _serverInfo;
-    private StackerInfo _stackerInfo;
+    private ServerInfo _serverInfo = new ServerInfo();
+    private StackerInfo _stackerInfo = new StackerInfo();
 
     private readonly ILogger<ApplicationSettingsService> _logger;
 
     public int Priority { get; set; } = 0;
+
+    public ServerInfo ServerInfo { get => this._serverInfo; }
+    
+    public StackerInfo StackerInfo { get => this._stackerInfo; }
 
     public ApplicationSettingsService(
         ILogger<ApplicationSettingsService> logger)
@@ -58,7 +62,7 @@ public class ApplicationSettingsService : IApplicationSettingsService, IBootstra
             throw new InvalidOperationException("Missing server information in ApplicationSetting.json");
         }
 
-        this._serverInfo.ListeningPort = serverInfo.ListeningPort;
+        this._serverInfo = serverInfo;
     }
 
     private void LoadStakerInfo(IConfigurationRoot config)
@@ -72,8 +76,7 @@ public class ApplicationSettingsService : IApplicationSettingsService, IBootstra
             throw new InvalidOperationException("Missing stacker information in ApplicationSetting.json");
         }
 
-        this._stackerInfo.PublicEncryptAddress = stackerInfo.PublicEncryptAddress;
-        this._stackerInfo.PublicSigningAddress = stackerInfo.PublicSigningAddress;
+        this._stackerInfo = stackerInfo;
     }
 
     public Task Startup()
