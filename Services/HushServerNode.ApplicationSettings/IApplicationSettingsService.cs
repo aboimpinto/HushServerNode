@@ -1,4 +1,4 @@
-﻿namespace HushServerNode.ApplicationSettingsService;
+﻿namespace HushServerNode.ApplicationSettings;
 
 public interface IApplicationSettingsService
 {

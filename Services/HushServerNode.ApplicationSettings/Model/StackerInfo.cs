@@ -1,6 +1,6 @@
-﻿namespace HushServerNode.Model;
+﻿namespace HushServerNode.ApplicationSettingsService.Model;
 
-public class StackerInfo : IStackerInfo
+public class StackerInfo 
 {
     public string PublicSigningAddress { get; set; } = string.Empty;
 

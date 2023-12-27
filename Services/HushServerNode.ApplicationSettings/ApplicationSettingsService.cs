@@ -1,24 +1,24 @@
 ﻿using System.Reflection;
-using HushServerNode.Model;
+using HushServerNode.ApplicationSettingsService.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Olimpo;
 
-namespace HushServerNode.ApplicationSettingsService;
+namespace HushServerNode.ApplicationSettings;
 
-public class ApplicationSettingsService : IApplicationSettingsService
+public class ApplicationSettingsService : IApplicationSettingsService, IBootstrapper
 {
     private const string ApplicationSettingsFileName = "ApplicationSettings.json";
-    private readonly IServerInfo _serverInfo;
-    private readonly IStackerInfo _stackerInfo;
+    private ServerInfo _serverInfo;
+    private StackerInfo _stackerInfo;
+
     private readonly ILogger<ApplicationSettingsService> _logger;
 
+    public int Priority { get; set; } = 0;
+
     public ApplicationSettingsService(
-        IServerInfo serverInfo,
-        IStackerInfo stackerInfo,
         ILogger<ApplicationSettingsService> logger)
     {
-        this._serverInfo = serverInfo;
-        this._stackerInfo = stackerInfo;
         this._logger = logger;
     }
 
@@ -74,5 +74,17 @@ public class ApplicationSettingsService : IApplicationSettingsService
 
         this._stackerInfo.PublicEncryptAddress = stackerInfo.PublicEncryptAddress;
         this._stackerInfo.PublicSigningAddress = stackerInfo.PublicSigningAddress;
+    }
+
+    public Task Startup()
+    {
+        this.LoadSettings();
+
+        return Task.CompletedTask;
+    }
+
+    public void Shutdown()
+    {
+        
     }
 }

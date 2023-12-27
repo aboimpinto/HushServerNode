@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpServerManager", "Modules
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ApplicationSettingsService", "Services\HushServerNode.ApplicationSettingsService\HushServerNode.ApplicationSettingsService.csproj", "{A310A282-1F8F-41FD-AB64-C8F8B96BA067}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ApplicationSettingsService.Model", "Services\HushServerNode.ApplicationSettingsService.Model\HushServerNode.ApplicationSettingsService.Model.csproj", "{83ABF525-741F-4101-B0FB-9F19F8165AD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ServerService", "Services\HushServerNode.ServerService\HushServerNode.ServerService.csproj", "{25C2CFDC-EFC6-4A29-B1FA-3017B95F5E3A}"
@@ -26,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EncryptingManager", "Modules\Olimpo.EncryptingManager\EncryptingManager.csproj", "{48F7D346-80FF-44AA-8A05-6763457BE278}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.BlockchainService", "Services\HushServerNode.BlockchainService\HushServerNode.BlockchainService.csproj", "{446CBD5E-2DEF-48E9-8161-8184C74A30AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ApplicationSettingsService", "Services\HushServerNode.ApplicationSettings\HushServerNode.ApplicationSettingsService.csproj", "{AE744764-F08D-4486-B1BA-AD415B9B9E1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,10 +52,6 @@ Global
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A310A282-1F8F-41FD-AB64-C8F8B96BA067}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83ABF525-741F-4101-B0FB-9F19F8165AD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -76,16 +72,20 @@ Global
 		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{446CBD5E-2DEF-48E9-8161-8184C74A30AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE744764-F08D-4486-B1BA-AD415B9B9E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE744764-F08D-4486-B1BA-AD415B9B9E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE744764-F08D-4486-B1BA-AD415B9B9E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE744764-F08D-4486-B1BA-AD415B9B9E1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{25C27339-9E26-4AC8-9549-53999DEC2C93} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{025CF167-8F50-4EF2-8919-5316FFDA3012} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{B2577068-7B1B-44D7-AE72-6DC16CA1CD5C} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
-		{A310A282-1F8F-41FD-AB64-C8F8B96BA067} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 		{83ABF525-741F-4101-B0FB-9F19F8165AD6} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 		{25C2CFDC-EFC6-4A29-B1FA-3017B95F5E3A} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 		{F4F3272B-9021-47B7-8924-3196C355460E} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{48F7D346-80FF-44AA-8A05-6763457BE278} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{446CBD5E-2DEF-48E9-8161-8184C74A30AD} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
+		{AE744764-F08D-4486-B1BA-AD415B9B9E1A} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 	EndGlobalSection
 EndGlobal
