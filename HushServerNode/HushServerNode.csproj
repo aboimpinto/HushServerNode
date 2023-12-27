@@ -27,6 +27,7 @@
     <ProjectReference Include="..\Modules\Olimpo.EncryptingManager\EncryptingManager.csproj" />
     <ProjectReference Include="..\Services\HushServerNode.Blockchain\HushServerNode.Blockchain.csproj" />
     <ProjectReference Include="..\Services\HushServerNode.BlockchainService\HushServerNode.BlockchainService.csproj" />
+    <ProjectReference Include="..\Services\HushServerNode.ApplicationSettings\HushServerNode.ApplicationSettingsService.csproj" />
   </ItemGroup>
 
 </Project>

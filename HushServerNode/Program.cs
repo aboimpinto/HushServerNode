@@ -1,5 +1,4 @@
-﻿
-using HushServerNode.Services.NodeSettings;
+﻿using HushServerNode.ApplicationSettings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
@@ -36,8 +35,7 @@ public class Program
             .RegisterEventAggregatorManager()
             .RegisterTcpServer()
             .RegisterApplicationSettingsService()
-            .RegisterBlockchainService()
-            .RegisterNodeSettings();
+            .RegisterBlockchainService();
             // .RegisterApplicationSettings()
             // .RegisterTcpServer()
             // .RegisterServer()
