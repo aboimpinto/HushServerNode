@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HushServerNode.Blockchain.Model;
 
 namespace HushServerNode.Blockchain.Events
@@ -5,10 +6,22 @@ namespace HushServerNode.Blockchain.Events
     public class BlockCreatedEvent
     {
         public Block Block { get; }
+        private readonly TransactionBaseConverter _transactionBaseConverter;
 
-        public BlockCreatedEvent(Block block)
+        public BlockCreatedEvent(
+            Block blockSigned, 
+            TransactionBaseConverter transactionBaseConverter)
         {
-            this.Block = block;
+            this._transactionBaseConverter = transactionBaseConverter;
+            this.Block = blockSigned;
+        }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this, new JsonSerializerOptions
+            {
+                Converters = { this._transactionBaseConverter }
+            });
         }
     }
 }

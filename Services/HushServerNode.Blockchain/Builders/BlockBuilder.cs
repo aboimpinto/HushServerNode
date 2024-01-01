@@ -9,6 +9,14 @@ public class BlockBuilder : IBlockBuilder
     private string _previousBlockId = string.Empty;
     private string _nextBlockId = string.Empty;
     private double _blockIndex;
+    private TransactionBase _signedRewardTransaction;
+    private StackerInfo _stackerInfo;
+    private readonly TransactionBaseConverter _transactionBaseConverter;
+
+    public BlockBuilder(TransactionBaseConverter transactionBaseConverter)
+    {
+        this._transactionBaseConverter = transactionBaseConverter;
+    }
 
     public IBlockBuilder WithBlockId(string blockId)
     {
@@ -36,15 +44,31 @@ public class BlockBuilder : IBlockBuilder
 
     public IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo)
     {
+        this._signedRewardTransaction = new BlockCreationTransaction(this._blockId, stackerInfo.PublicSigningAddress);
+        this._signedRewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+
+        this._stackerInfo = stackerInfo;
+
         return this;
     }
 
     public Block Build()
     {
-        return new Block(
+        var block = new Block(
             this._blockId, 
             this._previousBlockId, 
             this._nextBlockId, 
-            this._blockIndex);
+            this._blockIndex)
+        {
+            Transactions = new List<TransactionBase>
+            {
+                this._signedRewardTransaction
+            }
+        };
+
+        block.FinalizeBlock();
+        block.Sign(this._stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+
+        return block;
     }
 }

@@ -1,4 +1,5 @@
-﻿using Olimpo;
+﻿using System.Reactive.Subjects;
+using Olimpo;
 
 namespace HushServerNode.Blockchain;
 
@@ -10,6 +11,8 @@ public class BlockchainBootstrapper : IBootstrapper
 
     public int Priority { get; set; } = 10;
 
+    public Subject<bool> BootstrapFinished { get; }
+
     public BlockchainBootstrapper(
         IBlockchainService blockchainService,
         IMemPoolService memPoolService,
@@ -18,6 +21,8 @@ public class BlockchainBootstrapper : IBootstrapper
         this._blockchainService = blockchainService;
         this._memPoolService = memPoolService;
         this._blockGeneratorService = blockGeneratorService;
+
+        this.BootstrapFinished = new Subject<bool>();
     }
 
     public void Shutdown()
@@ -28,5 +33,7 @@ public class BlockchainBootstrapper : IBootstrapper
     {
         await this._blockchainService.InitializeBlockchainAsync();
         await this._memPoolService.InitializeMemPool();
+
+        this.BootstrapFinished.OnNext(true);
     }
 }

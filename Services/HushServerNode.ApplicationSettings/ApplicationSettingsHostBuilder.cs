@@ -16,14 +16,14 @@ public static class ApplicationSettingsHostBuilder
             services.AddSingleton<IBootstrapper>(x => 
             {
                 if (x.GetService<IApplicationSettingsService>() is not IBootstrapper bootstrapper)
-                    {
-                        throw new InvalidOperationException("ApplicationSettings doesn't implement IBootstrapper interface");
-                    }
+                {
+                    throw new InvalidOperationException("ApplicationSettings doesn't implement IBootstrapper interface");
+                }
 
-                    return bootstrapper;
+                return bootstrapper;
             });
 
-            services.AddTransient<IApplicationSettingsService, ApplicationSettingsService>();
+            // services.AddTransient<IApplicationSettingsService, ApplicationSettingsService>();
         });
 
         return builder;

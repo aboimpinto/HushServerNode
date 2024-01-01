@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Reactive.Subjects;
+using System.Reflection;
 using HushServerNode.ApplicationSettings.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,10 +21,14 @@ public class ApplicationSettingsService : IApplicationSettingsService, IBootstra
     
     public StackerInfo StackerInfo { get => this._stackerInfo; }
 
+    public Subject<bool> BootstrapFinished { get; }
+
     public ApplicationSettingsService(
         ILogger<ApplicationSettingsService> logger)
     {
         this._logger = logger;
+
+        this.BootstrapFinished = new Subject<bool>();
     }
 
     public void LoadSettings()
@@ -83,6 +88,7 @@ public class ApplicationSettingsService : IApplicationSettingsService, IBootstra
     {
         this.LoadSettings();
 
+        this.BootstrapFinished.OnNext(true);
         return Task.CompletedTask;
     }
 

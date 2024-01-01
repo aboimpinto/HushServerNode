@@ -1,5 +1,6 @@
 ﻿using HushServerNode.Blockchain;
 using HushServerNode.Blockchain.Builders;
+using HushServerNode.Blockchain.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
@@ -20,6 +21,8 @@ public static class BlockchainHostBuilder
 
             services.AddSingleton<IMemPoolService, MemPoolService>();
             services.AddSingleton<IBlockGeneratorService, BlockGeneratorService>();
+
+            services.AddSingleton<IBlockCreatedEventFactory, BlockCreatedEventFactory>();
         });
 
         return builder;

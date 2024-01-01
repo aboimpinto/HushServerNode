@@ -1,4 +1,5 @@
-﻿using HushServerNode.ApplicationSettings;
+﻿using System.Reactive.Subjects;
+using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
 using HushServerNode.Blockchain.Model;
@@ -22,7 +23,7 @@ public class BlockchainService :
     private readonly IEventAggregator _eventAggregator;
     private readonly IBlockBuilder _blockBuilder;
     private readonly IApplicationSettingsService _applicationSettingsService;
-
+    private readonly TransactionBaseConverter _transactionBaseConverter;
     private Block _currentBlock;
     
     public string CurrentBlockId { get => this._currentBlock.BlockId; }
@@ -34,17 +35,21 @@ public class BlockchainService :
         IEventAggregator eventAggregator,
         IBlockBuilder blockBuilder,
         IApplicationSettingsService applicationSettingsService,
+        TransactionBaseConverter transactionBaseConverter,
         ILogger<BlockchainService> logger)
     {
         this._eventAggregator = eventAggregator;
         this._blockBuilder = blockBuilder;
         this._applicationSettingsService = applicationSettingsService;
+        this._transactionBaseConverter = transactionBaseConverter;
         this._logger = logger;
 
         this._eventAggregator.Subscribe(this);
     }
 
-    public int Priority { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public int Priority { get; set; } = 10;
+
+    public Subject<bool> BootstrapFinished { get; }
 
     public async Task InitializeBlockchainAsync()
     {
@@ -91,14 +96,54 @@ public class BlockchainService :
 
     public void Handle(BlockCreatedEvent message)
     {
-        this._blockchain.Add(message.Block);
-        this._currentBlock = message.Block;
+        if (this.VerifyBlock(message.Block))
+        {
+            this._blockchain.Add(message.Block);
+            this._currentBlock = message.Block;
 
-        this._logger.LogInformation("Creating Block: {0} | Previous Block: {1} | Next Block: {2}", 
-            this.CurrentBlockId, 
-            this.CurrentPreviousBlockId,  
-            this.CurrentNextBlockId);
+            this.IndexBlock(message.Block);
 
-        // TODO [AboimPinto]: Signal the MemPool the created event to remove the transactions from the MemPool.
+            this._logger.LogInformation("Creating Block: {0} | Previous Block: {1} | Next Block: {2}", 
+                this.CurrentBlockId, 
+                this.CurrentPreviousBlockId,  
+                this.CurrentNextBlockId);
+
+            // TODO [AboimPinto]: Signal the MemPool the created event to remove the transactions from the MemPool.
+        }
+        else
+        {
+            // TODO [AboimPinto]: what we should do when the block is not verified?
+        }
+        
     }
+
+    private bool VerifyBlock(Block block)
+    {
+        var blockValidator = block.Transactions.GetRewardTransaction();
+        var blockValidatorAddress = blockValidator.Issuer;
+
+        var blockChecked = block.CheckBlockSignature(blockValidatorAddress, this._transactionBaseConverter);
+
+        if (blockChecked)
+        {
+            foreach(var transaction in block.Transactions)
+            {
+                if (!transaction.CheckTransactionSignature(transaction.Issuer, this._transactionBaseConverter))
+                {
+                    blockChecked = false;
+                    break;
+                }
+            }
+        }
+
+        return blockChecked;
+    }
+
+    private void IndexBlock(Block signedBlock)
+    {
+        // Group transactions where a certain address is involved.
+
+    }
+
+    private Dictionary<string, List<TransactionBase>> _groupedTransactions;
 }

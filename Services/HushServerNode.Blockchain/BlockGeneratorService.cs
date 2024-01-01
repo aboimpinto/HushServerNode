@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
+using HushServerNode.Blockchain.Factories;
 using Olimpo;
 
 namespace HushServerNode.Blockchain;
@@ -13,6 +14,7 @@ public class BlockGeneratorService :
     private readonly IBlockBuilder _blockBuilder;
     private readonly IBlockchainService _blockchainService;
     private readonly IMemPoolService _memPoolService;
+    private readonly IBlockCreatedEventFactory _blockCreatedEventFactory;
     private readonly IApplicationSettingsService _applicationSettingsService;
     private readonly IEventAggregator _eventAggregator;
 
@@ -22,12 +24,14 @@ public class BlockGeneratorService :
         IBlockBuilder blockBuilder,
         IBlockchainService blockchainService,
         IMemPoolService memPoolService,
+        IBlockCreatedEventFactory blockCreatedEventFactory,
         IApplicationSettingsService applicationSettingsService,
         IEventAggregator eventAggregator)
     {
         this._blockBuilder = blockBuilder;
         this._blockchainService = blockchainService;
         this._memPoolService = memPoolService;
+        this._blockCreatedEventFactory = blockCreatedEventFactory;
         this._applicationSettingsService = applicationSettingsService;
         this._eventAggregator = eventAggregator;
 
@@ -50,12 +54,7 @@ public class BlockGeneratorService :
                 .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo)
                 .Build();
 
-            await this._eventAggregator.PublishAsync(new BlockCreatedEvent(block));
+            await this._eventAggregator.PublishAsync(this._blockCreatedEventFactory.GetInstance(block));
         });
     }
-}
-
-public interface IBlockGeneratorService
-{
-    
 }
