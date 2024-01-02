@@ -25,7 +25,10 @@ public class BlockchainService :
     private readonly IApplicationSettingsService _applicationSettingsService;
     private readonly TransactionBaseConverter _transactionBaseConverter;
     private Block _currentBlock;
-    
+
+    private Dictionary<string, List<TransactionBase>> _groupedTransactions;
+    private Dictionary<string, double> _addressBalance;
+
     public string CurrentBlockId { get => this._currentBlock.BlockId; }
     public double CurrentBlockIndex { get => this._currentBlock.Index; }
     public string CurrentPreviousBlockId { get => this._currentBlock.PreviousBlockId; }
@@ -76,6 +79,8 @@ public class BlockchainService :
             this._blockchain.Add(genesisBlock);
             this._currentBlock = genesisBlock;
             this._logger.LogInformation("Creating Genesis Block - {0} | Next Block - {1}", this.CurrentBlockId, this.CurrentNextBlockId);
+
+            this.IndexBlock(genesisBlock);
 
             await this._eventAggregator.PublishAsync(new BlockchainInitializedEvent(this.CurrentBlockId, this.CurrentNextBlockId, genesisBlockIndex));
         }
@@ -141,9 +146,43 @@ public class BlockchainService :
 
     private void IndexBlock(Block signedBlock)
     {
+        if(this._groupedTransactions == null)
+        {
+            this._groupedTransactions = new Dictionary<string, List<TransactionBase>>();
+        }
+
+        if (this._addressBalance == null)
+        {
+            this._addressBalance = new Dictionary<string, double>();
+        }
+
         // Group transactions where a certain address is involved.
+        foreach(var transaction in signedBlock.Transactions)
+        {
+            if (this._groupedTransactions.ContainsKey(transaction.Issuer))
+            {
+                this._groupedTransactions[transaction.Issuer].Add(transaction);
+            }
+            else
+            {
+                this._groupedTransactions.Add(transaction.Issuer, new List<TransactionBase> { transaction });
+            }
+
+            if(this._addressBalance.ContainsKey(transaction.Issuer))
+            {
+                if (transaction is BlockCreationTransaction blockCreationTransaction)
+                {
+                    this._addressBalance[transaction.Issuer] += blockCreationTransaction.Reward;
+                }
+            }
+            else
+            {
+                if (transaction is BlockCreationTransaction blockCreationTransaction)
+                {
+                    this._addressBalance.Add(transaction.Issuer, blockCreationTransaction.Reward);
+                }
+            }
+        }
 
     }
-
-    private Dictionary<string, List<TransactionBase>> _groupedTransactions;
 }
