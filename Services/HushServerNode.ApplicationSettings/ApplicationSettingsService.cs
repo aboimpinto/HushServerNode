@@ -1,5 +1,6 @@
 ﻿using System.Reactive.Subjects;
 using System.Reflection;
+using System.Security.Authentication.ExtendedProtection;
 using HushServerNode.ApplicationSettings.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

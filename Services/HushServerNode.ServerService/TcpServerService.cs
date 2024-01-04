@@ -1,6 +1,6 @@
 ﻿namespace HushServerNode.ServerService;
 
-public class ServerService
+public class TcpServerService: ITcpServerService
 {
 
 }
