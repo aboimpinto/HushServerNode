@@ -10,6 +10,7 @@ namespace HushServerNode.ServerService
     {
         private readonly IApplicationSettingsService _applicationSettingsService;
         private readonly IServer _server;
+        private readonly ITcpServerService _tcpServerService;
         private readonly ILogger<ServerBootstrapper> _logger;
 
         public Subject<bool> BootstrapFinished { get; }
@@ -19,10 +20,12 @@ namespace HushServerNode.ServerService
         public ServerBootstrapper(
             IApplicationSettingsService applicationSettingsService,
             IServer server,
+            ITcpServerService tcpServerService,
             ILogger<ServerBootstrapper> logger)
         {
             this._applicationSettingsService = applicationSettingsService;
             this._server = server;
+            this._tcpServerService = tcpServerService;
             this._logger = logger;
 
             this.BootstrapFinished = new Subject<bool>();

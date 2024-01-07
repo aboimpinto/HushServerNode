@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.ApplicationS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushServerNode.Blockchain", "Services\HushServerNode.Blockchain\HushServerNode.Blockchain.csproj", "{868518C5-9A9D-4EFB-A475-0E8830809E7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushEcosystem.RpcModel", "Modules\HushEcosystem.RpcModel\HushEcosystem.RpcModel.csproj", "{01A4904E-2298-4B58-966E-20D390A4560D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{868518C5-9A9D-4EFB-A475-0E8830809E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{868518C5-9A9D-4EFB-A475-0E8830809E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{868518C5-9A9D-4EFB-A475-0E8830809E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01A4904E-2298-4B58-966E-20D390A4560D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01A4904E-2298-4B58-966E-20D390A4560D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01A4904E-2298-4B58-966E-20D390A4560D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01A4904E-2298-4B58-966E-20D390A4560D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{25C27339-9E26-4AC8-9549-53999DEC2C93} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
@@ -80,5 +86,6 @@ Global
 		{48F7D346-80FF-44AA-8A05-6763457BE278} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 		{AE744764-F08D-4486-B1BA-AD415B9B9E1A} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
 		{868518C5-9A9D-4EFB-A475-0E8830809E7A} = {95FF0470-2EE1-4DF0-AC1D-3E7DFE6C9751}
+		{01A4904E-2298-4B58-966E-20D390A4560D} = {C846234B-D6E2-4AC3-A498-55026BA61AB7}
 	EndGlobalSection
 EndGlobal

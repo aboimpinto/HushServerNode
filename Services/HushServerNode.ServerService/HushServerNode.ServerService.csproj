@@ -4,6 +4,7 @@
     <ProjectReference Include="..\..\Modules\Olimpo.TcpServerManager\TcpServerManager.csproj" />
     <ProjectReference Include="..\..\Modules\Olimpo.BootstrapperManager\BootstrapperManager.csproj" />
     <ProjectReference Include="..\HushServerNode.ApplicationSettings\HushServerNode.ApplicationSettingsService.csproj" />
+    <ProjectReference Include="..\..\Modules\HushEcosystem.RpcModel\HushEcosystem.RpcModel.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
