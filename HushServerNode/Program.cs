@@ -31,6 +31,7 @@ public class Program
             .RegisterApplicationSettingsService()
             .RegisterBlockchainService()
             .RegisterServerService()
-            .RegisterRpcModel();
+            .RegisterRpcModel()
+            .RegisterRpcManager();
 }
 

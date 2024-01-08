@@ -24,7 +24,15 @@ public class TcpServerService: ITcpServerService
                 throw new InvalidOperationException($"There is no strategy for the command: : {decompressedMessage}");
             }
             
-            commandStrategy.Handle(decompressedMessage);
+            commandStrategy.Handle(decompressedMessage, x.ChannelId);
         });
+    }
+
+    public void SendThroughChannel(string channelId, string message)
+    {
+        var channel = this._server.ConnectedChannels.OpenChannels
+            .Single(x => x.Key == channelId).Value;
+        
+        channel.Send(message);
     }
 }
