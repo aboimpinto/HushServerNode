@@ -8,7 +8,7 @@ namespace HushServerNode.RpcManager;
 
 public class Rpc :
     IRpc,
-    IHandle<HandShakeRequestedEvent>
+    IHandle<HandshakeRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IEventAggregator _eventAggregator;
@@ -23,7 +23,7 @@ public class Rpc :
         this._eventAggregator.Subscribe(this);
     }
 
-    public void Handle(HandShakeRequestedEvent message)
+    public void Handle(HandshakeRequestedEvent message)
     {
         // TODO [AboimPinto] Implement the rules that will accept the Handshake Request or not.
 
