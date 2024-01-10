@@ -1,6 +1,6 @@
-﻿using Olimpo;
-using HushEcosystem.RpcModel;
-using HushEcosystem.RpcModel.CommandDeserializeStrategies;
+﻿using HushEcosystem;
+using HushEcosystem.Model.Rpc.CommandDeserializeStrategies;
+using Olimpo;
 
 namespace HushServerNode.ServerService;
 

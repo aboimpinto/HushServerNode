@@ -13,7 +13,6 @@ public static class BlockchainHostBuilder
     {
         builder.ConfigureServices((hostContext, services) => 
         {
-            services.AddTransient<TransactionBaseConverter>();
             services.AddTransient<IBlockBuilder, BlockBuilder>();
 
             services.AddSingleton<IBootstrapper, BlockchainBootstrapper>();

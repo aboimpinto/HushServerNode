@@ -1,5 +1,5 @@
+using HushEcosystem.Model.Blockchain;
 using HushServerNode.ApplicationSettings.Model;
-using HushServerNode.Blockchain.Model;
 
 namespace HushServerNode.Blockchain.Builders;
 
@@ -13,7 +13,7 @@ public interface IBlockBuilder
 
     IBlockBuilder WithBlockIndex(double blockIndex);
 
-    IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo);
+    IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo, double blockHeight);
 
     Block Build();
 }

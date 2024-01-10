@@ -1,8 +1,9 @@
 ﻿using System.Reactive.Subjects;
+using HushEcosystem.Model;
+using HushEcosystem.Model.Blockchain;
 using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
-using HushServerNode.Blockchain.Model;
 using Microsoft.Extensions.Logging;
 using Olimpo;
 
@@ -73,7 +74,7 @@ public class BlockchainService :
                 .WithBlockIndex(genesisBlockIndex)
                 .WithBlockId(generisBlockId)
                 .WithNextBlockId(genesisNextBlockId)
-                .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo)
+                .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo, genesisBlockIndex)
                 .Build();
 
             this._blockchain.Add(genesisBlock);
@@ -88,6 +89,18 @@ public class BlockchainService :
         {
             throw new NotImplementedException("Working with a persistent Blockchain is not implemented yet.");
         }
+    }
+
+    public IEnumerable<TransactionBase> ListTransactionsForAddress(string address, int lastHeightSynched)
+    {
+        if (this._groupedTransactions.ContainsKey(address))
+        {
+            return this._groupedTransactions[address]
+                .Where(x => x.Issuer == address && x.BlockHeight > lastHeightSynched)
+                .OrderBy(x => x.BlockHeight);
+        }
+
+        return new List<TransactionBase>();
     }
 
     public void Shutdown()
@@ -127,13 +140,13 @@ public class BlockchainService :
         var blockValidator = block.Transactions.GetRewardTransaction();
         var blockValidatorAddress = blockValidator.Issuer;
 
-        var blockChecked = block.CheckBlockSignature(blockValidatorAddress, this._transactionBaseConverter);
+        var blockChecked = ((ISignable)block).CheckSignature(blockValidatorAddress, this._transactionBaseConverter);
 
         if (blockChecked)
         {
             foreach(var transaction in block.Transactions)
             {
-                if (!transaction.CheckTransactionSignature(transaction.Issuer, this._transactionBaseConverter))
+                if (!((ISignable)transaction).CheckSignature(transaction.Issuer, this._transactionBaseConverter))
                 {
                     blockChecked = false;
                     break;

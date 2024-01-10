@@ -46,12 +46,14 @@ public class BlockGeneratorService :
         {
             var transactions = this._memPoolService.GetNextBlockTransactionsCandidate();
 
+            var newBlockHeight = this._blockchainService.CurrentBlockIndex + 1; 
+
             var block = this._blockBuilder
-                .WithBlockIndex(this._blockchainService.CurrentBlockIndex + 1)
+                .WithBlockIndex(newBlockHeight)
                 .WithBlockId(this._blockchainService.CurrentNextBlockId)
                 .WithPreviousBlockId(this._blockchainService.CurrentBlockId)
                 .WithNextBlockId(Guid.NewGuid().ToString())
-                .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo)
+                .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo, newBlockHeight)
                 .Build();
 
             await this._eventAggregator.PublishAsync(this._blockCreatedEventFactory.GetInstance(block));

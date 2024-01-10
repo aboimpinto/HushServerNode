@@ -1,4 +1,4 @@
-using HushServerNode.Blockchain.Model;
+using HushEcosystem.Model.Blockchain;
 
 namespace HushServerNode.Blockchain;
 

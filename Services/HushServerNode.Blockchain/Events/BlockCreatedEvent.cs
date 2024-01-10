@@ -1,5 +1,6 @@
 using System.Text.Json;
-using HushServerNode.Blockchain.Model;
+using HushEcosystem.Model;
+using HushEcosystem.Model.Blockchain;
 
 namespace HushServerNode.Blockchain.Events
 {

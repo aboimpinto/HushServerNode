@@ -6,6 +6,7 @@
     <ProjectReference Include="..\..\Modules\HushEcosystem.RpcModel\HushEcosystem.RpcModel.csproj" />
     <ProjectReference Include="..\..\Modules\Olimpo.TcpServerManager\TcpServerManager.csproj" />
     <ProjectReference Include="..\HushServerNode.ServerService\HushServerNode.ServerService.csproj" />
+    <ProjectReference Include="..\HushServerNode.Blockchain\HushServerNode.Blockchain.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

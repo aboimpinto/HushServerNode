@@ -1,5 +1,6 @@
+using HushEcosystem.Model;
+using HushEcosystem.Model.Blockchain;
 using HushServerNode.ApplicationSettings.Model;
-using HushServerNode.Blockchain.Model;
 
 namespace HushServerNode.Blockchain.Builders;
 
@@ -42,9 +43,9 @@ public class BlockBuilder : IBlockBuilder
         return this;
     }
 
-    public IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo)
+    public IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo, double blockHeight)
     {
-        this._signedRewardTransaction = new BlockCreationTransaction(this._blockId, stackerInfo.PublicSigningAddress);
+        this._signedRewardTransaction = new BlockCreationTransaction(this._blockId, stackerInfo.PublicSigningAddress, blockHeight);
         this._signedRewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
 
         this._stackerInfo = stackerInfo;

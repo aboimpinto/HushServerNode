@@ -1,5 +1,5 @@
+using HushEcosystem.Model.Blockchain;
 using HushServerNode.Blockchain.Events;
-using HushServerNode.Blockchain.Model;
 
 namespace HushServerNode.Blockchain.Factories;
 

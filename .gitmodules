@@ -13,6 +13,3 @@
 [submodule "Modules/Olimpo.EncryptingManager"]
 	path = Modules/Olimpo.EncryptingManager
 	url = git@github.com:aboimpinto/Olimpo.EncryptingManager.git
-[submodule "Modules/HushEcosystem.RpcModel"]
-	path = Modules/HushEcosystem.RpcModel
-	url = git@github.com:aboimpinto/HushEcosystem.RpcModel.git
