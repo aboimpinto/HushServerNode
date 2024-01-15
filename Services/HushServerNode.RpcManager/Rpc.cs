@@ -48,6 +48,10 @@ public class Rpc :
             .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
 
         var transactionsWithAddressResponse = new TransactionsWithAddressResponseBuilder()
+            .WithTransactions(transactions)
             .Build();
+
+        this._tcpServerService
+            .SendThroughChannel(message.ChannelId, transactionsWithAddressResponse.ToJson().Compress());
     }
 }
