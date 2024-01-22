@@ -1,4 +1,5 @@
 using HushEcosystem;
+using HushEcosystem.Model.Rpc.Blockchain;
 using HushEcosystem.Model.Rpc.GlobalEvents;
 using HushEcosystem.Model.Rpc.Handshake;
 using HushEcosystem.Model.Rpc.Transactions;
@@ -11,6 +12,7 @@ namespace HushServerNode.RpcManager;
 public class Rpc :
     IRpc,
     IHandle<HandshakeRequestedEvent>,
+    IHandle<BlockchainHeightRequestEvent>,
     IHandle<TransationsWithAddressRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
@@ -40,6 +42,19 @@ public class Rpc :
 
         this._tcpServerService
             .SendThroughChannel(message.ChannelId, handshakeResponse.ToJson().Compress());
+    }
+
+    public void Handle(BlockchainHeightRequestEvent message)
+    {
+        var height =  this._blockchainService.CurrentBlockIndex;
+
+        var blockchainHeightResponse = new BlockchainHeightRespose
+        { 
+            Height = height 
+        };
+
+        this._tcpServerService
+            .SendThroughChannel(message.ChannelId, blockchainHeightResponse.ToJson().Compress());
     }
 
     public void Handle(TransationsWithAddressRequestedEvent message)
