@@ -48,7 +48,7 @@ public class Rpc :
     {
         var height =  this._blockchainService.CurrentBlockIndex;
 
-        var blockchainHeightResponse = new BlockchainHeightRespose
+        var blockchainHeightResponse = new BlockchainHeightResponse
         { 
             Height = height 
         };
