@@ -13,7 +13,7 @@ public class Rpc :
     IRpc,
     IHandle<HandshakeRequestedEvent>,
     IHandle<BlockchainHeightRequestEvent>,
-    IHandle<TransationsWithAddressRequestedEvent>
+    IHandle<TransactionsWithAddressRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IBlockchainService _blockchainService;
@@ -57,7 +57,7 @@ public class Rpc :
             .SendThroughChannel(message.ChannelId, blockchainHeightResponse.ToJson().Compress());
     }
 
-    public void Handle(TransationsWithAddressRequestedEvent message)
+    public void Handle(TransactionsWithAddressRequestedEvent message)
     {
         var transactions = this._blockchainService
             .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
