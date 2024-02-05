@@ -103,6 +103,16 @@ public class BlockchainService :
         return new List<TransactionBase>();
     }
 
+    public double GetBalanceForAddress(string address)
+    {
+        if (this._addressBalance.ContainsKey(address))
+        {
+            return this._addressBalance[address];
+        }
+
+        return 0;
+    }
+
     public void Shutdown()
     {
     }

@@ -12,4 +12,6 @@ public interface IBlockchainService
     Task InitializeBlockchainAsync();
 
     IEnumerable<TransactionBase> ListTransactionsForAddress(string address, int lastHeightSynched);
+
+    double GetBalanceForAddress(string address);
 }

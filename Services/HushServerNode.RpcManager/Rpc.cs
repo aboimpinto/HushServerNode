@@ -12,8 +12,9 @@ namespace HushServerNode.RpcManager;
 public class Rpc :
     IRpc,
     IHandle<HandshakeRequestedEvent>,
-    IHandle<BlockchainHeightRequestEvent>,
-    IHandle<TransactionsWithAddressRequestedEvent>
+    IHandle<BlockchainHeightRequestedEvent>,
+    IHandle<TransactionsWithAddressRequestedEvent>,
+    IHandle<BalanceByAddressRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IBlockchainService _blockchainService;
@@ -44,7 +45,7 @@ public class Rpc :
             .SendThroughChannel(message.ChannelId, handshakeResponse.ToJson().Compress());
     }
 
-    public void Handle(BlockchainHeightRequestEvent message)
+    public void Handle(BlockchainHeightRequestedEvent message)
     {
         var height =  this._blockchainService.CurrentBlockIndex;
 
@@ -68,5 +69,18 @@ public class Rpc :
 
         this._tcpServerService
             .SendThroughChannel(message.ChannelId, transactionsWithAddressResponse.ToJson().Compress());
+    }
+
+    public void Handle(BalanceByAddressRequestedEvent message)
+    {
+        var balance = this._blockchainService
+            .GetBalanceForAddress(message.BalanceByAddressRequest.Address);
+
+        var balanceByAddressResponse = new BalanceByAddressResponseBuilder()
+            .WithBalance(balance)
+            .Build();
+
+        this._tcpServerService
+            .SendThroughChannel(message.ChannelId, balanceByAddressResponse.ToJson().Compress());
     }
 }
