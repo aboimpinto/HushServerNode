@@ -1,4 +1,5 @@
 using HushEcosystem;
+using HushEcosystem.Model;
 using HushEcosystem.Model.Rpc.Blockchain;
 using HushEcosystem.Model.Rpc.GlobalEvents;
 using HushEcosystem.Model.Rpc.Handshake;
@@ -18,15 +19,18 @@ public class Rpc :
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IBlockchainService _blockchainService;
+    private readonly TransactionBaseConverter _transactionBaseConverter;
     private readonly IEventAggregator _eventAggregator;
 
     public Rpc(
         ITcpServerService tcpServerService,
         IBlockchainService blockchainService,
+        TransactionBaseConverter transactionBaseConverter,
         IEventAggregator eventAggregator)
     {
         this._tcpServerService = tcpServerService;
         this._blockchainService = blockchainService;
+        this._transactionBaseConverter = transactionBaseConverter;
         this._eventAggregator = eventAggregator;
 
         this._eventAggregator.Subscribe(this);
@@ -42,7 +46,7 @@ public class Rpc :
             .Build();
 
         this._tcpServerService
-            .SendThroughChannel(message.ChannelId, handshakeResponse.ToJson().Compress());
+            .SendThroughChannel(message.ChannelId, handshakeResponse.ToJson(this._transactionBaseConverter).Compress());
     }
 
     public void Handle(BlockchainHeightRequestedEvent message)
@@ -55,20 +59,24 @@ public class Rpc :
         };
 
         this._tcpServerService
-            .SendThroughChannel(message.ChannelId, blockchainHeightResponse.ToJson().Compress());
+            .SendThroughChannel(message.ChannelId, blockchainHeightResponse.ToJson(this._transactionBaseConverter).Compress());
     }
 
     public void Handle(TransactionsWithAddressRequestedEvent message)
     {
-        // var transactions = this._blockchainService
-        //     .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
+        var transactions = this._blockchainService
+            .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
 
-        // var transactionsWithAddressResponse = new TransactionsWithAddressResponseBuilder()
-        //     .WithTransactions(transactions)
-        //     .Build();
+        var transactionsWithAddressResponse = new TransactionsWithAddressResponseBuilder()
+            .WithTransactions(transactions)
+            .Build();
 
-        // this._tcpServerService
-        //     .SendThroughChannel(message.ChannelId, transactionsWithAddressResponse.ToJson().Compress());
+        this._tcpServerService
+            .SendThroughChannel(
+                message.ChannelId, 
+                transactionsWithAddressResponse
+                    .ToJson(this._transactionBaseConverter)
+                    .Compress());
     }
 
     public void Handle(BalanceByAddressRequestedEvent message)
@@ -81,6 +89,6 @@ public class Rpc :
             .Build();
 
         this._tcpServerService
-            .SendThroughChannel(message.ChannelId, balanceByAddressResponse.ToJson().Compress());
+            .SendThroughChannel(message.ChannelId, balanceByAddressResponse.ToJson(this._transactionBaseConverter).Compress());
     }
 }
