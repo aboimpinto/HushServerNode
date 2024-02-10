@@ -19,10 +19,24 @@ public static class TransactionBaseExtensions
             Converters = { transactionBaseConverter }
         };
 
-        // var json = JsonSerializer.Serialize(signableObject, jsonOptions);
         var json = signableObject.ToJson(jsonOptions);
 
         signableObject.Signature = SigningKeys.SignMessage(json, privateKey);
+    }
+
+    public static void HashObject(this IHashable hashableObject, TransactionBaseConverter transactionBaseConverter)
+    {
+        var jsonOptions = new JsonSerializerOptions
+        {
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { ExcludeHashProperty, ExcludeSignatureProperty }
+            },
+            Converters = { transactionBaseConverter }
+        };
+
+        var json = hashableObject.ToJson(jsonOptions);
+        hashableObject.Hash = json.GetHashCode().ToString();
     }
 
     public static bool CheckSignature(this ISignable signableObject, string signingAddress, TransactionBaseConverter transactionBaseConverter)
@@ -48,6 +62,21 @@ public static class TransactionBaseExtensions
         foreach (JsonPropertyInfo property in jsonTypeInfo.Properties)
         {
             if (property.Name.Contains("Signature"))
+            {
+                property.Get = null;
+                property.Set = null;
+            }
+        }
+    }
+
+    static void ExcludeHashProperty(JsonTypeInfo jsonTypeInfo)
+    {
+        if (jsonTypeInfo.Kind != JsonTypeInfoKind.Object)
+            return;
+
+        foreach (JsonPropertyInfo property in jsonTypeInfo.Properties)
+        {
+            if (property.Name.Contains("Hash"))
             {
                 property.Get = null;
                 property.Set = null;

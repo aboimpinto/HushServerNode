@@ -4,11 +4,12 @@ namespace HushServerNode.Blockchain;
 
 public static class TransactionExtensionMethods
 {
-    public static BlockCreationTransaction GetRewardTransaction(this IEnumerable<TransactionBase> transactions)
+    public static VerifiedTransaction GetRewardTransaction(this IEnumerable<VerifiedTransaction> transactions)
     {
-        var transaction = transactions
-            .Single(x => x.Type == "8e29c7c1-f2d8-4ff3-9d97-e927e3f40c79");
+        var verifiedRewardTransaction = transactions
+            .Where(x => x.SpecificTransaction.TransactionId == BlockCreationTransaction.TypeCode)
+            .Single();
 
-        return (BlockCreationTransaction)transaction;
+        return verifiedRewardTransaction;
     }
 }

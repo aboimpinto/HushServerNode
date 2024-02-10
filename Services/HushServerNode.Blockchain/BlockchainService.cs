@@ -4,6 +4,7 @@ using HushEcosystem.Model.Blockchain;
 using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
+using HushServerNode.Blockchain.ExtensionMethods;
 using Microsoft.Extensions.Logging;
 using Olimpo;
 
@@ -27,7 +28,7 @@ public class BlockchainService :
     private readonly TransactionBaseConverter _transactionBaseConverter;
     private Block _currentBlock;
 
-    private Dictionary<string, List<TransactionBase>> _groupedTransactions;
+    private Dictionary<string, List<VerifiedTransaction>> _groupedTransactions;
     private Dictionary<string, double> _addressBalance;
 
     public string CurrentBlockId { get => this._currentBlock.BlockId; }
@@ -91,16 +92,16 @@ public class BlockchainService :
         }
     }
 
-    public IEnumerable<TransactionBase> ListTransactionsForAddress(string address, int lastHeightSynched)
+    public IEnumerable<VerifiedTransaction> ListTransactionsForAddress(string address, int lastHeightSynched)
     {
         if (this._groupedTransactions.ContainsKey(address))
         {
             return this._groupedTransactions[address]
-                .Where(x => x.Issuer == address && x.BlockHeight > lastHeightSynched)
-                .OrderBy(x => x.BlockHeight);
+                .Where(x => x.SpecificTransaction.Issuer == address && x.BlockIndex > lastHeightSynched)
+                .OrderBy(x => x.BlockIndex);
         }
 
-        return new List<TransactionBase>();
+        return new List<VerifiedTransaction>();
     }
 
     public double GetBalanceForAddress(string address)
@@ -147,16 +148,17 @@ public class BlockchainService :
 
     private bool VerifyBlock(Block block)
     {
-        var blockValidator = block.Transactions.GetRewardTransaction();
-        var blockValidatorAddress = blockValidator.Issuer;
-
-        var blockChecked = ((ISignable)block).CheckSignature(blockValidatorAddress, this._transactionBaseConverter);
+        var blockGeneratorAddress = block.GetBlockGeneratorAddress();
+        var blockChecked = block.CheckSignature(blockGeneratorAddress, this._transactionBaseConverter);
 
         if (blockChecked)
         {
+            // interate over the transactions and check the signature of each one.
             foreach(var transaction in block.Transactions)
             {
-                if (!((ISignable)transaction).CheckSignature(transaction.Issuer, this._transactionBaseConverter))
+                var transactionIssuer = transaction.GetTransactionIssuer();
+
+                if (!transaction.SpecificTransaction.CheckSignature(transactionIssuer, this._transactionBaseConverter))
                 {
                     blockChecked = false;
                     break;
@@ -167,11 +169,11 @@ public class BlockchainService :
         return blockChecked;
     }
 
-    private void IndexBlock(Block signedBlock)
+    private void IndexBlock(Block block)
     {
         if(this._groupedTransactions == null)
         {
-            this._groupedTransactions = new Dictionary<string, List<TransactionBase>>();
+            this._groupedTransactions = new Dictionary<string, List<VerifiedTransaction>>();
         }
 
         if (this._addressBalance == null)
@@ -180,32 +182,31 @@ public class BlockchainService :
         }
 
         // Group transactions where a certain address is involved.
-        foreach(var transaction in signedBlock.Transactions)
+        foreach(var transaction in block.Transactions)
         {
-            if (this._groupedTransactions.ContainsKey(transaction.Issuer))
+            if (this._groupedTransactions.ContainsKey(transaction.SpecificTransaction.Issuer))
             {
-                this._groupedTransactions[transaction.Issuer].Add(transaction);
+                this._groupedTransactions[transaction.SpecificTransaction.Issuer].Add(transaction);
             }
             else
             {
-                this._groupedTransactions.Add(transaction.Issuer, new List<TransactionBase> { transaction });
+                this._groupedTransactions.Add(transaction.SpecificTransaction.Issuer, new List<VerifiedTransaction> { transaction });
             }
 
-            if(this._addressBalance.ContainsKey(transaction.Issuer))
+            if(this._addressBalance.ContainsKey(transaction.SpecificTransaction.Issuer))
             {
-                if (transaction is BlockCreationTransaction blockCreationTransaction)
+                if (transaction.SpecificTransaction is IValueableTransaction valuableTransaction)
                 {
-                    this._addressBalance[transaction.Issuer] += blockCreationTransaction.Reward;
+                    this._addressBalance[transaction.SpecificTransaction.Issuer] += valuableTransaction.Value;
                 }
             }
             else
             {
-                if (transaction is BlockCreationTransaction blockCreationTransaction)
+                if (transaction.SpecificTransaction is IValueableTransaction valuableTransaction)
                 {
-                    this._addressBalance.Add(transaction.Issuer, blockCreationTransaction.Reward);
+                    this._addressBalance.Add(transaction.SpecificTransaction.Issuer, valuableTransaction.Value);
                 }
             }
         }
-
     }
 }

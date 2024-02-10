@@ -60,15 +60,15 @@ public class Rpc :
 
     public void Handle(TransactionsWithAddressRequestedEvent message)
     {
-        var transactions = this._blockchainService
-            .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
+        // var transactions = this._blockchainService
+        //     .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
 
-        var transactionsWithAddressResponse = new TransactionsWithAddressResponseBuilder()
-            .WithTransactions(transactions)
-            .Build();
+        // var transactionsWithAddressResponse = new TransactionsWithAddressResponseBuilder()
+        //     .WithTransactions(transactions)
+        //     .Build();
 
-        this._tcpServerService
-            .SendThroughChannel(message.ChannelId, transactionsWithAddressResponse.ToJson().Compress());
+        // this._tcpServerService
+        //     .SendThroughChannel(message.ChannelId, transactionsWithAddressResponse.ToJson().Compress());
     }
 
     public void Handle(BalanceByAddressRequestedEvent message)

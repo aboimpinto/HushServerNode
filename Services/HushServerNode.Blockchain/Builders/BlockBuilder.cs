@@ -10,7 +10,8 @@ public class BlockBuilder : IBlockBuilder
     private string _previousBlockId = string.Empty;
     private string _nextBlockId = string.Empty;
     private double _blockIndex;
-    private TransactionBase _signedRewardTransaction;
+    private TransactionBase _rewardTransaction;
+    private VerifiedTransaction _verifiedRewardTransaction;
     private StackerInfo _stackerInfo;
     private readonly TransactionBaseConverter _transactionBaseConverter;
 
@@ -45,8 +46,21 @@ public class BlockBuilder : IBlockBuilder
 
     public IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo, double blockHeight)
     {
-        this._signedRewardTransaction = new BlockCreationTransaction(this._blockId, stackerInfo.PublicSigningAddress, blockHeight);
-        this._signedRewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+        this._rewardTransaction = new BlockCreationTransactionBuilder()
+            .WithIssuerAddress(stackerInfo.PublicSigningAddress)
+            .Build();
+
+        this._rewardTransaction.HashObject(this._transactionBaseConverter);
+        this._rewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+        
+        this._verifiedRewardTransaction = new VerifiedTransaction
+        {
+            SpecificTransaction = this._rewardTransaction,
+            ValidatorAddress = stackerInfo.PublicSigningAddress
+        };
+
+        // this._verifiedRewardTransaction.HashObject(this._transactionBaseConverter);
+        // this._verifiedRewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
 
         this._stackerInfo = stackerInfo;
 
@@ -59,13 +73,16 @@ public class BlockBuilder : IBlockBuilder
             this._blockId, 
             this._previousBlockId, 
             this._nextBlockId, 
-            this._blockIndex)
-        {
-            Transactions = new List<TransactionBase>
-            {
-                this._signedRewardTransaction
-            }
-        };
+            this._blockIndex);
+
+        // Add the verified reward transaction
+        this._verifiedRewardTransaction.BlockIndex = this._blockIndex;
+        this._verifiedRewardTransaction.HashObject(this._transactionBaseConverter);
+        this._verifiedRewardTransaction.Sign(this._stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+        block.Transactions.Add(this._verifiedRewardTransaction);
+
+        // Get validated transactions from the MemPool
+        // TODO [AboimPinto]: Add MemPool transactions to the block
 
         block.FinalizeBlock();
         block.Sign(this._stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
