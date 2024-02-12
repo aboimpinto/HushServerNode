@@ -163,15 +163,13 @@ public class BlockchainService :
             // interate over the transactions and check the signature of each one.
             foreach(var transaction in block.Transactions)
             {
-                var transactionIssuer = transaction.GetTransactionIssuer();
-
                 var transactionJsonOptions = new JsonSerializerOptionsBuilder()
                     .WithTransactionBaseConverter(this._transactionBaseConverter)
-                    .WithModifierExcludeSignature()
                     .WithModifierExcludeBlockIndex()
+                    .WithModifierExcludeSignature()
                     .Build();
 
-                if (!transaction.SpecificTransaction.CheckSignature(transactionIssuer, transactionJsonOptions))
+                if (!transaction.CheckSignature(transaction.ValidatorAddress, transactionJsonOptions))
                 {
                     blockChecked = false;
                     break;
