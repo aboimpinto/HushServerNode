@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Subjects;
 using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
+using HushEcosystem.Model.Builders;
 using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
@@ -148,8 +149,14 @@ public class BlockchainService :
 
     private bool VerifyBlock(Block block)
     {
+        var blockJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .Build();
+
         var blockGeneratorAddress = block.GetBlockGeneratorAddress();
-        var blockChecked = block.CheckSignature(blockGeneratorAddress, this._transactionBaseConverter);
+        var blockChecked = block.CheckSignature(blockGeneratorAddress, blockJsonOptions);
 
         if (blockChecked)
         {
@@ -158,7 +165,13 @@ public class BlockchainService :
             {
                 var transactionIssuer = transaction.GetTransactionIssuer();
 
-                if (!transaction.SpecificTransaction.CheckSignature(transactionIssuer, this._transactionBaseConverter))
+                var transactionJsonOptions = new JsonSerializerOptionsBuilder()
+                    .WithTransactionBaseConverter(this._transactionBaseConverter)
+                    .WithModifierExcludeSignature()
+                    .WithModifierExcludeBlockIndex()
+                    .Build();
+
+                if (!transaction.SpecificTransaction.CheckSignature(transactionIssuer, transactionJsonOptions))
                 {
                     blockChecked = false;
                     break;
@@ -184,6 +197,8 @@ public class BlockchainService :
         // Group transactions where a certain address is involved.
         foreach(var transaction in block.Transactions)
         {
+            transaction.BlockIndex = block.Index;
+
             if (this._groupedTransactions.ContainsKey(transaction.SpecificTransaction.Issuer))
             {
                 this._groupedTransactions[transaction.SpecificTransaction.Issuer].Add(transaction);

@@ -6,5 +6,5 @@ public interface IMemPoolService
 {
     Task InitializeMemPool();
 
-    IEnumerable<TransactionBase> GetNextBlockTransactionsCandidate();
+    IEnumerable<VerifiedTransaction> GetNextBlockTransactionsCandidate();
 }

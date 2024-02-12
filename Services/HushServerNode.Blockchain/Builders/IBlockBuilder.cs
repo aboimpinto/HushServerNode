@@ -15,5 +15,7 @@ public interface IBlockBuilder
 
     IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo, double blockHeight);
 
+    IBlockBuilder WithTransactions(IEnumerable<VerifiedTransaction> verifiedTransactions);
+
     Block Build();
 }

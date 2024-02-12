@@ -48,12 +48,14 @@ public class BlockGeneratorService :
 
             var newBlockHeight = this._blockchainService.CurrentBlockIndex + 1; 
 
+            // TODO [AboimPinto] Add the transactions to the block
             var block = this._blockBuilder
                 .WithBlockIndex(newBlockHeight)
                 .WithBlockId(this._blockchainService.CurrentNextBlockId)
                 .WithPreviousBlockId(this._blockchainService.CurrentBlockId)
                 .WithNextBlockId(Guid.NewGuid().ToString())
                 .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo, newBlockHeight)
+                .WithTransactions(transactions)
                 .Build();
 
             await this._eventAggregator.PublishAsync(this._blockCreatedEventFactory.GetInstance(block));

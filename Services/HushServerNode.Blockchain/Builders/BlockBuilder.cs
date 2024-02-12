@@ -1,5 +1,6 @@
 using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
+using HushEcosystem.Model.Builders;
 using HushServerNode.ApplicationSettings.Model;
 
 namespace HushServerNode.Blockchain.Builders;
@@ -13,6 +14,7 @@ public class BlockBuilder : IBlockBuilder
     private TransactionBase _rewardTransaction;
     private VerifiedTransaction _verifiedRewardTransaction;
     private StackerInfo _stackerInfo;
+    private IEnumerable<VerifiedTransaction> _verifiedTransactions;
     private readonly TransactionBaseConverter _transactionBaseConverter;
 
     public BlockBuilder(TransactionBaseConverter transactionBaseConverter)
@@ -46,12 +48,25 @@ public class BlockBuilder : IBlockBuilder
 
     public IBlockBuilder WithRewardBeneficiary(StackerInfo stackerInfo, double blockHeight)
     {
+        var hashTransactionJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .WithModifierExcludeHash()
+            .Build();
+
+        var signTransactionJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .Build();
+
         this._rewardTransaction = new BlockCreationTransactionBuilder()
             .WithIssuerAddress(stackerInfo.PublicSigningAddress)
             .Build();
 
-        this._rewardTransaction.HashObject(this._transactionBaseConverter);
-        this._rewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+        this._rewardTransaction.HashObject(hashTransactionJsonOptions);
+        this._rewardTransaction.Sign(stackerInfo.PrivateSigningKey, signTransactionJsonOptions);
         
         this._verifiedRewardTransaction = new VerifiedTransaction
         {
@@ -59,11 +74,17 @@ public class BlockBuilder : IBlockBuilder
             ValidatorAddress = stackerInfo.PublicSigningAddress
         };
 
-        // this._verifiedRewardTransaction.HashObject(this._transactionBaseConverter);
-        // this._verifiedRewardTransaction.Sign(stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+        this._verifiedRewardTransaction.HashObject(hashTransactionJsonOptions);
+        this._verifiedRewardTransaction.Sign(stackerInfo.PrivateSigningKey, signTransactionJsonOptions);
 
         this._stackerInfo = stackerInfo;
 
+        return this;
+    }
+
+    public IBlockBuilder WithTransactions(IEnumerable<VerifiedTransaction> verifiedTransactions)
+    {
+        this._verifiedTransactions = verifiedTransactions;
         return this;
     }
 
@@ -76,16 +97,25 @@ public class BlockBuilder : IBlockBuilder
             this._blockIndex);
 
         // Add the verified reward transaction
-        this._verifiedRewardTransaction.BlockIndex = this._blockIndex;
-        this._verifiedRewardTransaction.HashObject(this._transactionBaseConverter);
-        this._verifiedRewardTransaction.Sign(this._stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
         block.Transactions.Add(this._verifiedRewardTransaction);
 
         // Get validated transactions from the MemPool
-        // TODO [AboimPinto]: Add MemPool transactions to the block
+        if (this._verifiedTransactions != null)
+        {
+            foreach (var item in this._verifiedTransactions)
+            {
+                block.Transactions.Add(item);
+            }
+        }
 
         block.FinalizeBlock();
-        block.Sign(this._stackerInfo.PrivateSigningKey, this._transactionBaseConverter);
+
+        var jsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .Build();
+        block.Sign(this._stackerInfo.PrivateSigningKey, jsonOptions);
 
         return block;
     }

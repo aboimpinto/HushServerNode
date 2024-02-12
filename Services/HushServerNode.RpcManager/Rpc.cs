@@ -1,3 +1,4 @@
+using System.Text.Json;
 using HushEcosystem;
 using HushEcosystem.Model;
 using HushEcosystem.Model.Rpc.Blockchain;
@@ -45,8 +46,13 @@ public class Rpc :
             .WithFailureReason(string.Empty)
             .Build();
 
+        var jsonOptions = new JsonSerializerOptions
+        {
+            Converters = { this._transactionBaseConverter }
+        };
+
         this._tcpServerService
-            .SendThroughChannel(message.ChannelId, handshakeResponse.ToJson(this._transactionBaseConverter).Compress());
+            .SendThroughChannel(message.ChannelId, handshakeResponse.ToJson(jsonOptions).Compress());
     }
 
     public void Handle(BlockchainHeightRequestedEvent message)
@@ -58,8 +64,13 @@ public class Rpc :
             Height = height 
         };
 
+        var jsonOptions = new JsonSerializerOptions
+        {
+            Converters = { this._transactionBaseConverter }
+        };
+
         this._tcpServerService
-            .SendThroughChannel(message.ChannelId, blockchainHeightResponse.ToJson(this._transactionBaseConverter).Compress());
+            .SendThroughChannel(message.ChannelId, blockchainHeightResponse.ToJson(jsonOptions).Compress());
     }
 
     public void Handle(TransactionsWithAddressRequestedEvent message)
@@ -71,11 +82,16 @@ public class Rpc :
             .WithTransactions(transactions)
             .Build();
 
+        var jsonOptions = new JsonSerializerOptions
+        {
+            Converters = { this._transactionBaseConverter }
+        };
+
         this._tcpServerService
             .SendThroughChannel(
                 message.ChannelId, 
                 transactionsWithAddressResponse
-                    .ToJson(this._transactionBaseConverter)
+                    .ToJson(jsonOptions)
                     .Compress());
     }
 
@@ -88,7 +104,12 @@ public class Rpc :
             .WithBalance(balance)
             .Build();
 
+        var jsonOptions = new JsonSerializerOptions
+        {
+            Converters = { this._transactionBaseConverter }
+        };
+
         this._tcpServerService
-            .SendThroughChannel(message.ChannelId, balanceByAddressResponse.ToJson(this._transactionBaseConverter).Compress());
+            .SendThroughChannel(message.ChannelId, balanceByAddressResponse.ToJson(jsonOptions).Compress());
     }
 }
