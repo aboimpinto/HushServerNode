@@ -1,8 +1,8 @@
 using System.Text.Json;
 using HushEcosystem;
 using HushEcosystem.Model;
+using HushEcosystem.Model.GlobalEvents;
 using HushEcosystem.Model.Rpc.Blockchain;
-using HushEcosystem.Model.Rpc.GlobalEvents;
 using HushEcosystem.Model.Rpc.Handshake;
 using HushEcosystem.Model.Rpc.Transactions;
 using HushServerNode.Blockchain;

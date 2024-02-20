@@ -93,7 +93,7 @@ public class BlockchainService :
         }
     }
 
-    public IEnumerable<VerifiedTransaction> ListTransactionsForAddress(string address, int lastHeightSynched)
+    public IEnumerable<VerifiedTransaction> ListTransactionsForAddress(string address, double lastHeightSynched)
     {
         if (this._groupedTransactions.ContainsKey(address))
         {

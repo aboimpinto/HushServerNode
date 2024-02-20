@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
 using HushEcosystem.Model.Builders;
-using HushEcosystem.Model.Rpc.GlobalEvents;
+using HushEcosystem.Model.GlobalEvents;
 using HushServerNode.ApplicationSettings;
 using Microsoft.Extensions.Logging;
 using Olimpo;
@@ -13,6 +13,7 @@ public class MemPoolService:
     IMemPoolService,
     IHandle<NewFeedRequestedEvent>
 {
+    private readonly IBlockchainService _blockchainService;
     private readonly IApplicationSettingsService _applicationSettingsService;
     private readonly TransactionBaseConverter _transactionBaseConverter;
     private readonly IEventAggregator _eventAggregator;
@@ -23,11 +24,13 @@ public class MemPoolService:
     // private IList<TransactionBase> _allBlockTransactionsCandidate;
 
     public MemPoolService(
+        IBlockchainService blockchainService,
         IApplicationSettingsService applicationSettingsService,
         TransactionBaseConverter transactionBaseConverter,
         IEventAggregator eventAggregator,
         ILogger<MemPoolService> logger)
     {
+        this._blockchainService = blockchainService;
         this._applicationSettingsService = applicationSettingsService;
         this._transactionBaseConverter = transactionBaseConverter;
         this._eventAggregator = eventAggregator;
@@ -54,29 +57,52 @@ public class MemPoolService:
         // TODO [AboimPinto] Verify if the transaction is valid before add to the MemPool
         // ...
 
-        // Add the valid transaction to the MemPool 
-        var verifiedTransaction = new VerifiedTransaction
+        var refuseMessage = string.Empty;
+
+        if (message.NewFeedRequest.Feed.FeedType == FeedTypeEnum.Personal)
         {
-            SpecificTransaction = message.NewFeedRequest.Feed,
-            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
-        };
+            var anyPersonalFeed = this._blockchainService
+                .ListTransactionsForAddress(message.NewFeedRequest.Feed.Issuer, 0)
+                .Any(x => x.SpecificTransaction.TransactionId == Feed.TypeCode && ((Feed)x.SpecificTransaction).FeedType == FeedTypeEnum.Personal);
 
-        var hashJsonOptions = new JsonSerializerOptionsBuilder()
-            .WithTransactionBaseConverter(this._transactionBaseConverter)
-            .WithModifierExcludeSignature()
-            .WithModifierExcludeBlockIndex()
-            .WithModifierExcludeHash()
-            .Build();
+            if (anyPersonalFeed)
+            {
+                refuseMessage = $"The request for a personal feed for the user {message.NewFeedRequest.Feed.Issuer} was rejected because has already a personal feed associated.";
+            }
+        }
+        else
+        {
+            // TODO [AboimPinto] How to verify a NewFeedTransaction when is not personal
+            // TODO [AboimPinto] should these checks be here or in a strategy for this type of Request? 
+        }
 
-        var signJsonOptions = new JsonSerializerOptionsBuilder()
-            .WithTransactionBaseConverter(this._transactionBaseConverter)
-            .WithModifierExcludeSignature()
-            .WithModifierExcludeBlockIndex()
-            .Build();
+        
+        if (string.IsNullOrEmpty(refuseMessage))
+        {    
+            // Add the valid transaction to the MemPool 
+            var verifiedTransaction = new VerifiedTransaction
+            {
+                SpecificTransaction = message.NewFeedRequest.Feed,
+                ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
+            };
 
-        verifiedTransaction.HashObject(hashJsonOptions);
-        verifiedTransaction.Sign(this._applicationSettingsService.StackerInfo.PrivateSigningKey, signJsonOptions);
+            var hashJsonOptions = new JsonSerializerOptionsBuilder()
+                .WithTransactionBaseConverter(this._transactionBaseConverter)
+                .WithModifierExcludeSignature()
+                .WithModifierExcludeBlockIndex()
+                .WithModifierExcludeHash()
+                .Build();
 
-        this._nextBlockTransactionsCandidate.Add(verifiedTransaction);
+            var signJsonOptions = new JsonSerializerOptionsBuilder()
+                .WithTransactionBaseConverter(this._transactionBaseConverter)
+                .WithModifierExcludeSignature()
+                .WithModifierExcludeBlockIndex()
+                .Build();
+
+            verifiedTransaction.HashObject(hashJsonOptions);
+            verifiedTransaction.Sign(this._applicationSettingsService.StackerInfo.PrivateSigningKey, signJsonOptions);
+
+            this._nextBlockTransactionsCandidate.Add(verifiedTransaction);
+        }
     }
 }
