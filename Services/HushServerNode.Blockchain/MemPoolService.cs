@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Formats.Tar;
 using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
 using HushEcosystem.Model.Builders;
@@ -11,7 +12,8 @@ namespace HushServerNode.Blockchain;
 
 public class MemPoolService: 
     IMemPoolService,
-    IHandle<NewFeedRequestedEvent>
+    IHandle<NewFeedRequestedEvent>,
+    IHandle<SendFeedMessageRequestedEvent>
 {
     private readonly IBlockchainService _blockchainService;
     private readonly IApplicationSettingsService _applicationSettingsService;
@@ -104,5 +106,34 @@ public class MemPoolService:
 
             this._nextBlockTransactionsCandidate.Add(verifiedTransaction);
         }
+    }
+
+    public void Handle(SendFeedMessageRequestedEvent message)
+    {
+        // TODO [AboimPinto] Verify if the Issuer can public message in the Feed
+
+        var verifiedTransaction = new VerifiedTransaction
+        {
+            SpecificTransaction = message.SendMessageRequest.FeedMessage,
+            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
+        };
+
+        var hashJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .WithModifierExcludeHash()
+            .Build();
+
+        var signJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .Build();
+
+        verifiedTransaction.HashObject(hashJsonOptions);
+        verifiedTransaction.Sign(this._applicationSettingsService.StackerInfo.PrivateSigningKey, signJsonOptions);
+
+        this._nextBlockTransactionsCandidate.Add(verifiedTransaction);
     }
 }
