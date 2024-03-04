@@ -78,8 +78,11 @@ public class Rpc :
         var transactions = this._blockchainService
             .ListTransactionsForAddress(message.TransationsWithAddressRequest.Address, message.TransationsWithAddressRequest.LastHeightSynched);
 
+        var currentBlockHeight = this._blockchainService.CurrentBlockIndex;
+
         var transactionsWithAddressResponse = new TransactionsWithAddressResponseBuilder()
             .WithTransactions(transactions)
+            .WithBlockHeightSyncPoint(currentBlockHeight)
             .Build();
 
         var jsonOptions = new JsonSerializerOptions
