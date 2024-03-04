@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Formats.Tar;
 using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
 using HushEcosystem.Model.Builders;
@@ -13,7 +12,8 @@ namespace HushServerNode.Blockchain;
 public class MemPoolService: 
     IMemPoolService,
     IHandle<NewFeedRequestedEvent>,
-    IHandle<SendFeedMessageRequestedEvent>
+    IHandle<SendFeedMessageRequestedEvent>,
+    IHandle<UserProfileRequestedEvent>
 {
     private readonly IBlockchainService _blockchainService;
     private readonly IApplicationSettingsService _applicationSettingsService;
@@ -118,6 +118,33 @@ public class MemPoolService:
             ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
         };
 
+        var hashJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .WithModifierExcludeHash()
+            .Build();
+
+        var signJsonOptions = new JsonSerializerOptionsBuilder()
+            .WithTransactionBaseConverter(this._transactionBaseConverter)
+            .WithModifierExcludeSignature()
+            .WithModifierExcludeBlockIndex()
+            .Build();
+
+        verifiedTransaction.HashObject(hashJsonOptions);
+        verifiedTransaction.Sign(this._applicationSettingsService.StackerInfo.PrivateSigningKey, signJsonOptions);
+
+        this._nextBlockTransactionsCandidate.Add(verifiedTransaction);
+    }
+
+    public void Handle(UserProfileRequestedEvent message)
+    {
+        var verifiedTransaction = new VerifiedTransaction
+        {
+            SpecificTransaction = message.UserProfileRequest.UserProfile,
+            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
+        };
+        
         var hashJsonOptions = new JsonSerializerOptionsBuilder()
             .WithTransactionBaseConverter(this._transactionBaseConverter)
             .WithModifierExcludeSignature()
