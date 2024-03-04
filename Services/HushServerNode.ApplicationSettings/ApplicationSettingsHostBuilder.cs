@@ -1,4 +1,5 @@
-﻿using HushServerNode.ApplicationSettings;
+﻿using System;
+using HushServerNode.ApplicationSettings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
@@ -22,8 +23,6 @@ public static class ApplicationSettingsHostBuilder
 
                 return bootstrapper;
             });
-
-            // services.AddTransient<IApplicationSettingsService, ApplicationSettingsService>();
         });
 
         return builder;
