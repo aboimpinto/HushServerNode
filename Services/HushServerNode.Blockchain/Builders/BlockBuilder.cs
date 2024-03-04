@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
 using HushEcosystem.Model.Builders;

@@ -1,4 +1,6 @@
-﻿using HushEcosystem.Model.Blockchain;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using HushEcosystem.Model.Blockchain;
 
 namespace HushServerNode.Blockchain;
 

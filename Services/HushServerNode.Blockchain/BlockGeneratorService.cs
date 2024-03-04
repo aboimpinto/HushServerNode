@@ -1,3 +1,4 @@
+using System;
 using System.Reactive.Linq;
 using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
