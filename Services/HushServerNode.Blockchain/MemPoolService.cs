@@ -42,11 +42,12 @@ public class MemPoolService:
         this._logger = logger;
 
         this._eventAggregator.Subscribe(this);
+
+        this._nextBlockTransactionsCandidate = new ConcurrentBag<VerifiedTransaction>();
     }
             
     public Task InitializeMemPool()
-    {
-        this._nextBlockTransactionsCandidate = new ConcurrentBag<VerifiedTransaction>();
+    {        
         // this._allBlockTransactionsCandidate = new List<TransactionBase>();
 
         return Task.CompletedTask;
