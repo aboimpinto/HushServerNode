@@ -35,6 +35,7 @@ public class BlockchainService :
 
     private Dictionary<string, List<VerifiedTransaction>> _groupedTransactions;
     private Dictionary<string, double> _addressBalance;
+    private readonly IList<UserProfile> _profiles = new List<UserProfile>();
 
     public string CurrentBlockId { get => this._currentBlock.BlockId; }
     public double CurrentBlockIndex { get => this._currentBlock.Index; }
@@ -117,6 +118,12 @@ public class BlockchainService :
         }
 
         return 0;
+    }
+
+    public UserProfile GetUserProfile(string publicAddress)
+    {
+        return this._profiles
+            .SingleOrDefault(x => x.UserPublicSigningAddress == publicAddress);
     }
 
     public void Shutdown()
@@ -222,6 +229,22 @@ public class BlockchainService :
                 if (transaction.SpecificTransaction is IValueableTransaction valuableTransaction)
                 {
                     this._addressBalance.Add(transaction.SpecificTransaction.Issuer, valuableTransaction.Value);
+                }
+            }
+
+            // TODO [AboimPinto]: this check and indexing should be done outside this class and maybe done using strategy pattern.
+            if (transaction.SpecificTransaction.TransactionId == UserProfile.TypeCode)
+            {
+                var userProfile = (UserProfile)transaction.SpecificTransaction;
+                
+                var existingProfile = this._profiles.SingleOrDefault(x => x.UserPublicSigningAddress == userProfile.UserPublicSigningAddress);
+                if (existingProfile == null)
+                {
+                    this._profiles.Add(userProfile);
+                }
+                else
+                {
+                    existingProfile.IsPublic = userProfile.IsPublic;
                 }
             }
         }

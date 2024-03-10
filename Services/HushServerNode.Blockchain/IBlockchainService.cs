@@ -16,4 +16,6 @@ public interface IBlockchainService
     IEnumerable<VerifiedTransaction> ListTransactionsForAddress(string address, double lastHeightSynched);
 
     double GetBalanceForAddress(string address);
+
+    UserProfile GetUserProfile(string publicAddress);
 }

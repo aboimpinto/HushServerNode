@@ -4,6 +4,7 @@ using HushEcosystem.Model;
 using HushEcosystem.Model.GlobalEvents;
 using HushEcosystem.Model.Rpc.Blockchain;
 using HushEcosystem.Model.Rpc.Handshake;
+using HushEcosystem.Model.Rpc.Profiles;
 using HushEcosystem.Model.Rpc.Transactions;
 using HushServerNode.Blockchain;
 using HushServerNode.ServerService;
@@ -16,7 +17,8 @@ public class Rpc :
     IHandle<HandshakeRequestedEvent>,
     IHandle<BlockchainHeightRequestedEvent>,
     IHandle<TransactionsWithAddressRequestedEvent>,
-    IHandle<BalanceByAddressRequestedEvent>
+    IHandle<BalanceByAddressRequestedEvent>,
+    IHandle<SearchAccountByPublicKeyRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IBlockchainService _blockchainService;
@@ -114,5 +116,41 @@ public class Rpc :
 
         this._tcpServerService
             .SendThroughChannel(message.ChannelId, balanceByAddressResponse.ToJson(jsonOptions).Compress());
+    }
+
+    public void Handle(SearchAccountByPublicKeyRequestedEvent message)
+    {
+        SearchAccountByPublicKeyResponse searchAccountByPublicKeyResponse;
+
+        if (string.IsNullOrEmpty(message.SearchAccountByPublicKeyRequest.UserPublicKey))
+        {
+            searchAccountByPublicKeyResponse = new SearchAccountByPublicKeyResponseBuilder()
+                .WithFailureReason("Profile user public key is empty")
+                .Build();
+        }
+        else
+        {
+            var userProfile = this._blockchainService.GetUserProfile(message.SearchAccountByPublicKeyRequest.UserPublicKey);
+
+            if (userProfile == null)
+            {
+                searchAccountByPublicKeyResponse = new SearchAccountByPublicKeyResponseBuilder()
+                    .WithFailureReason("User not found")
+                    .Build();
+            }
+            else
+            {
+                searchAccountByPublicKeyResponse = new SearchAccountByPublicKeyResponseBuilder()
+                    .WithUserProfile(userProfile)
+                    .Build();
+            }   
+        }
+
+        this._tcpServerService
+                .SendThroughChannel(
+                    message.ChannelId, 
+                    searchAccountByPublicKeyResponse
+                        .ToJson(new JsonSerializerOptions { Converters = { this._transactionBaseConverter } })
+                        .Compress());
     }
 }
