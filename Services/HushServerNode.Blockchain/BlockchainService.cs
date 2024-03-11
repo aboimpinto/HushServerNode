@@ -103,7 +103,9 @@ public class BlockchainService :
         if (this._groupedTransactions.ContainsKey(address))
         {
             return this._groupedTransactions[address]
-                .Where(x => x.SpecificTransaction.Issuer == address && x.BlockIndex > lastHeightSynched)
+                .Where(x => 
+                    x.SpecificTransaction.Issuer == address && 
+                    x.BlockIndex > lastHeightSynched)
                 .OrderBy(x => x.BlockIndex);
         }
 
