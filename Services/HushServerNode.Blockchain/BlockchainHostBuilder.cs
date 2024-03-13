@@ -1,6 +1,7 @@
 ﻿using HushServerNode.Blockchain;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Factories;
+using HushServerNode.Blockchain.IndexStrategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Olimpo;
@@ -15,6 +16,8 @@ public static class BlockchainHostBuilder
         {
             services.AddTransient<IBlockBuilder, BlockBuilder>();
 
+            services.AddSingleton<IBlockchainIndexDb, BlockchainIndexDb>();                 // TODO [AboimPinto] this is a local database but in the future need to be a presistent database.
+
             services.AddSingleton<IBootstrapper, BlockchainBootstrapper>();
             services.AddSingleton<IBlockchainService, BlockchainService>();
 
@@ -22,6 +25,10 @@ public static class BlockchainHostBuilder
             services.AddSingleton<IBlockGeneratorService, BlockGeneratorService>();
 
             services.AddSingleton<IBlockCreatedEventFactory, BlockCreatedEventFactory>();
+
+            services.AddTransient<IIndexStrategy, ValueableTransactionIndexStrategy>();
+            services.AddTransient<IIndexStrategy, GroupTransactionsByAddressIndexStrategy>();
+            services.AddTransient<IIndexStrategy, UserProfileIndexStrategy>();
         });
 
         return builder;

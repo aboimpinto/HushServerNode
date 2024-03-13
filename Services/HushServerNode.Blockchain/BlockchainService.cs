@@ -10,8 +10,11 @@ using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
 using HushServerNode.Blockchain.ExtensionMethods;
+using HushServerNode.Blockchain.IndexStrategies;
 using Microsoft.Extensions.Logging;
 using Olimpo;
+using Org.BouncyCastle.Math.EC.Rfc7748;
+using Org.BouncyCastle.Utilities.Zlib;
 
 namespace HushServerNode.Blockchain;
 
@@ -31,11 +34,9 @@ public class BlockchainService :
     private readonly IBlockBuilder _blockBuilder;
     private readonly IApplicationSettingsService _applicationSettingsService;
     private readonly TransactionBaseConverter _transactionBaseConverter;
+    private readonly IBlockchainIndexDb _blockchainIndexDb;
+    private readonly IEnumerable<IIndexStrategy> _indexStrategies;
     private Block _currentBlock;
-
-    private Dictionary<string, List<VerifiedTransaction>> _groupedTransactions;
-    private Dictionary<string, double> _addressBalance;
-    private readonly IList<UserProfile> _profiles = new List<UserProfile>();
 
     public string CurrentBlockId { get => this._currentBlock.BlockId; }
     public double CurrentBlockIndex { get => this._currentBlock.Index; }
@@ -47,12 +48,16 @@ public class BlockchainService :
         IBlockBuilder blockBuilder,
         IApplicationSettingsService applicationSettingsService,
         TransactionBaseConverter transactionBaseConverter,
+        IBlockchainIndexDb blockchainIndexDb,
+        IEnumerable<IIndexStrategy> indexStrategies, 
         ILogger<BlockchainService> logger)
     {
         this._eventAggregator = eventAggregator;
         this._blockBuilder = blockBuilder;
         this._applicationSettingsService = applicationSettingsService;
         this._transactionBaseConverter = transactionBaseConverter;
+        this._blockchainIndexDb = blockchainIndexDb;
+        this._indexStrategies = indexStrategies;
         this._logger = logger;
 
         this._eventAggregator.Subscribe(this);
@@ -100,9 +105,9 @@ public class BlockchainService :
 
     public IEnumerable<VerifiedTransaction> ListTransactionsForAddress(string address, double lastHeightSynched)
     {
-        if (this._groupedTransactions.ContainsKey(address))
+        if (this._blockchainIndexDb.GroupedTransactions.ContainsKey(address))
         {
-            return this._groupedTransactions[address]
+            return this._blockchainIndexDb.GroupedTransactions[address]
                 .Where(x => 
                     x.SpecificTransaction.Issuer == address && 
                     x.BlockIndex > lastHeightSynched)
@@ -114,9 +119,9 @@ public class BlockchainService :
 
     public double GetBalanceForAddress(string address)
     {
-        if (this._addressBalance.ContainsKey(address))
+        if (this._blockchainIndexDb.AddressBalance.ContainsKey(address))
         {
-            return this._addressBalance[address];
+            return this._blockchainIndexDb.AddressBalance[address];
         }
 
         return 0;
@@ -124,7 +129,7 @@ public class BlockchainService :
 
     public UserProfile GetUserProfile(string publicAddress)
     {
-        return this._profiles
+        return this._blockchainIndexDb.Profiles
             .SingleOrDefault(x => x.UserPublicSigningAddress == publicAddress);
     }
 
@@ -157,7 +162,6 @@ public class BlockchainService :
         {
             // TODO [AboimPinto]: what we should do when the block is not verified?
         }
-        
     }
 
     private bool VerifyBlock(Block block)
@@ -195,59 +199,14 @@ public class BlockchainService :
 
     private void IndexBlock(Block block)
     {
-        if(this._groupedTransactions == null)
-        {
-            this._groupedTransactions = new Dictionary<string, List<VerifiedTransaction>>();
-        }
-
-        if (this._addressBalance == null)
-        {
-            this._addressBalance = new Dictionary<string, double>();
-        }
-
-        // Group transactions where a certain address is involved.
         foreach(var transaction in block.Transactions)
         {
-            transaction.BlockIndex = block.Index;
-
-            if (this._groupedTransactions.ContainsKey(transaction.SpecificTransaction.Issuer))
-            {
-                this._groupedTransactions[transaction.SpecificTransaction.Issuer].Add(transaction);
-            }
-            else
-            {
-                this._groupedTransactions.Add(transaction.SpecificTransaction.Issuer, new List<VerifiedTransaction> { transaction });
-            }
-
-            if(this._addressBalance.ContainsKey(transaction.SpecificTransaction.Issuer))
-            {
-                if (transaction.SpecificTransaction is IValueableTransaction valuableTransaction)
-                {
-                    this._addressBalance[transaction.SpecificTransaction.Issuer] += valuableTransaction.Value;
-                }
-            }
-            else
-            {
-                if (transaction.SpecificTransaction is IValueableTransaction valuableTransaction)
-                {
-                    this._addressBalance.Add(transaction.SpecificTransaction.Issuer, valuableTransaction.Value);
-                }
-            }
-
-            // TODO [AboimPinto]: this check and indexing should be done outside this class and maybe done using strategy pattern.
-            if (transaction.SpecificTransaction.TransactionId == UserProfile.TypeCode)
-            {
-                var userProfile = (UserProfile)transaction.SpecificTransaction;
+            var indexStrategiesThatCanHandle = this._indexStrategies
+                .Where(x => x.CanHandle(transaction));
                 
-                var existingProfile = this._profiles.SingleOrDefault(x => x.UserPublicSigningAddress == userProfile.UserPublicSigningAddress);
-                if (existingProfile == null)
-                {
-                    this._profiles.Add(userProfile);
-                }
-                else
-                {
-                    existingProfile.IsPublic = userProfile.IsPublic;
-                }
+            foreach (var item in indexStrategiesThatCanHandle)
+            {
+                item.Handle(transaction);
             }
         }
     }

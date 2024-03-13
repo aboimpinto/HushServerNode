@@ -91,33 +91,33 @@ public class BlockBuilder : IBlockBuilder
 
     public Block Build()
     {
-        var block = new Block(
+        var newBlock = new Block(
             this._blockId, 
             this._previousBlockId, 
             this._nextBlockId, 
             this._blockIndex);
 
         // Add the verified reward transaction
-        block.Transactions.Add(this._verifiedRewardTransaction);
+        newBlock.Transactions.Add(this._verifiedRewardTransaction);
 
         // Get validated transactions from the MemPool
         if (this._verifiedTransactions != null)
         {
             foreach (var item in this._verifiedTransactions)
             {
-                block.Transactions.Add(item);
+                newBlock.Transactions.Add(item);
             }
         }
 
-        block.FinalizeBlock();
+        newBlock.FinalizeBlock();
 
         var jsonOptions = new JsonSerializerOptionsBuilder()
             .WithTransactionBaseConverter(this._transactionBaseConverter)
             .WithModifierExcludeSignature()
             .WithModifierExcludeBlockIndex()
             .Build();
-        block.Sign(this._stackerInfo.PrivateSigningKey, jsonOptions);
+        newBlock.Sign(this._stackerInfo.PrivateSigningKey, jsonOptions);
 
-        return block;
+        return newBlock;
     }
 }
