@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using HushEcosystem.Model;
 using HushEcosystem.Model.Blockchain;
-using HushEcosystem.Model.Builders;
 using HushServerNode.ApplicationSettings;
 using HushServerNode.Blockchain.Builders;
 using HushServerNode.Blockchain.Events;
-using HushServerNode.Blockchain.ExtensionMethods;
 using HushServerNode.Blockchain.IndexStrategies;
 using Microsoft.Extensions.Logging;
 using Olimpo;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using Org.BouncyCastle.Utilities.Zlib;
 
 namespace HushServerNode.Blockchain;
 
@@ -25,15 +20,14 @@ public class BlockchainService :
 {
     private readonly ILogger<BlockchainService> _logger;
 
-    private readonly List<Block> _blockchain = new List<Block>();
-
     private double _lastBlockIndex;
 
     private string _lastBlockId = string.Empty;
     private readonly IEventAggregator _eventAggregator;
     private readonly IBlockBuilder _blockBuilder;
     private readonly IApplicationSettingsService _applicationSettingsService;
-    private readonly TransactionBaseConverter _transactionBaseConverter;
+    private readonly IBlockVerifier _blockVerifier;
+    private readonly IBlockchainDb _blockchainDb;
     private readonly IBlockchainIndexDb _blockchainIndexDb;
     private readonly IEnumerable<IIndexStrategy> _indexStrategies;
     private Block _currentBlock;
@@ -47,7 +41,8 @@ public class BlockchainService :
         IEventAggregator eventAggregator,
         IBlockBuilder blockBuilder,
         IApplicationSettingsService applicationSettingsService,
-        TransactionBaseConverter transactionBaseConverter,
+        IBlockVerifier blockVerifier,
+        IBlockchainDb blockchainDb,
         IBlockchainIndexDb blockchainIndexDb,
         IEnumerable<IIndexStrategy> indexStrategies, 
         ILogger<BlockchainService> logger)
@@ -55,7 +50,8 @@ public class BlockchainService :
         this._eventAggregator = eventAggregator;
         this._blockBuilder = blockBuilder;
         this._applicationSettingsService = applicationSettingsService;
-        this._transactionBaseConverter = transactionBaseConverter;
+        this._blockVerifier = blockVerifier;
+        this._blockchainDb = blockchainDb;
         this._blockchainIndexDb = blockchainIndexDb;
         this._indexStrategies = indexStrategies;
         this._logger = logger;
@@ -89,7 +85,7 @@ public class BlockchainService :
                 .WithRewardBeneficiary(this._applicationSettingsService.StackerInfo, genesisBlockIndex)
                 .Build();
 
-            this._blockchain.Add(genesisBlock);
+            this._blockchainDb.AddBlock(genesisBlock);
             this._currentBlock = genesisBlock;
             this._logger.LogInformation("Creating Genesis Block - {0} | Next Block - {1}", this.CurrentBlockId, this.CurrentNextBlockId);
 
@@ -144,9 +140,9 @@ public class BlockchainService :
 
     public void Handle(BlockCreatedEvent message)
     {
-        if (this.VerifyBlock(message.Block))
+        if (this._blockVerifier.IsBlockValid(message.Block))
         {
-            this._blockchain.Add(message.Block);
+            this._blockchainDb.AddBlock(message.Block);
             this._currentBlock = message.Block;
 
             this.IndexBlock(message.Block);
@@ -160,41 +156,8 @@ public class BlockchainService :
         }
         else
         {
-            // TODO [AboimPinto]: what we should do when the block is not verified?
+            // TODO [AboimPinto]: what we should do when the block is not valid?
         }
-    }
-
-    private bool VerifyBlock(Block block)
-    {
-        var blockJsonOptions = new JsonSerializerOptionsBuilder()
-            .WithTransactionBaseConverter(this._transactionBaseConverter)
-            .WithModifierExcludeSignature()
-            .WithModifierExcludeBlockIndex()
-            .Build();
-
-        var blockGeneratorAddress = block.GetBlockGeneratorAddress();
-        var blockChecked = block.CheckSignature(blockGeneratorAddress, blockJsonOptions);
-
-        if (blockChecked)
-        {
-            // interate over the transactions and check the signature of each one.
-            foreach(var transaction in block.Transactions)
-            {
-                var transactionJsonOptions = new JsonSerializerOptionsBuilder()
-                    .WithTransactionBaseConverter(this._transactionBaseConverter)
-                    .WithModifierExcludeBlockIndex()
-                    .WithModifierExcludeSignature()
-                    .Build();
-
-                if (!transaction.CheckSignature(transaction.ValidatorAddress, transactionJsonOptions))
-                {
-                    blockChecked = false;
-                    break;
-                }
-            }
-        }
-
-        return blockChecked;
     }
 
     private void IndexBlock(Block block)
