@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HushEcosystem.Model.Blockchain;
+using HushEcosystem.Model.Rpc.Feeds;
 
 namespace HushServerNode.Blockchain.IndexStrategies;
 
@@ -52,7 +53,7 @@ public class FeedIndexStrategy : IIndexStrategy
                 else
                 {
                     this._blockchainIndexDb.Feeds[feed.FeedParticipantPublicAddress]
-                        .Add(new Model.FeedDefinition
+                        .Add(new FeedDefinition
                         {
                             FeedId = feed.FeedId,
                             FeedType = feed.FeedType,
@@ -73,9 +74,9 @@ public class FeedIndexStrategy : IIndexStrategy
         {
             this._blockchainIndexDb.Feeds.Add(
                 feed.FeedParticipantPublicAddress, 
-                new List<Model.FeedDefinition>
+                new List<FeedDefinition>
                 {
-                    new Model.FeedDefinition
+                    new FeedDefinition
                     {
                         FeedId = feed.FeedId,
                         FeedType = feed.FeedType,

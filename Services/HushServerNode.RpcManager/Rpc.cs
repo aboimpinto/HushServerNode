@@ -1,8 +1,11 @@
+using System.Linq;
 using System.Text.Json;
 using HushEcosystem;
 using HushEcosystem.Model;
 using HushEcosystem.Model.GlobalEvents;
 using HushEcosystem.Model.Rpc.Blockchain;
+using HushEcosystem.Model.Rpc.CommandDeserializeStrategies;
+using HushEcosystem.Model.Rpc.Feeds;
 using HushEcosystem.Model.Rpc.Handshake;
 using HushEcosystem.Model.Rpc.Profiles;
 using HushEcosystem.Model.Rpc.Transactions;
@@ -18,21 +21,25 @@ public class Rpc :
     IHandle<BlockchainHeightRequestedEvent>,
     IHandle<TransactionsWithAddressRequestedEvent>,
     IHandle<BalanceByAddressRequestedEvent>,
-    IHandle<SearchAccountByPublicKeyRequestedEvent>
+    IHandle<SearchAccountByPublicKeyRequestedEvent>,
+    IHandle<FeedsForAddressRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IBlockchainService _blockchainService;
+    private readonly IBlockchainIndexDb _blockchainIndexDb;
     private readonly TransactionBaseConverter _transactionBaseConverter;
     private readonly IEventAggregator _eventAggregator;
 
     public Rpc(
         ITcpServerService tcpServerService,
         IBlockchainService blockchainService,
+        IBlockchainIndexDb blockchainIndexDb,
         TransactionBaseConverter transactionBaseConverter,
         IEventAggregator eventAggregator)
     {
         this._tcpServerService = tcpServerService;
         this._blockchainService = blockchainService;
+        this._blockchainIndexDb = blockchainIndexDb;
         this._transactionBaseConverter = transactionBaseConverter;
         this._eventAggregator = eventAggregator;
 
@@ -150,6 +157,25 @@ public class Rpc :
                 .SendThroughChannel(
                     message.ChannelId, 
                     searchAccountByPublicKeyResponse
+                        .ToJson(new JsonSerializerOptions { Converters = { this._transactionBaseConverter } })
+                        .Compress());
+    }
+
+    public void Handle(FeedsForAddressRequestedEvent message)
+    {
+        var feeds = this._blockchainIndexDb.Feeds
+            .Where(x => x.Key == message.FeedsForAddressRequest.Address)
+            .Single();
+
+        var response = new FeedsForAddressResponse
+        {
+            FeedDefinitions = feeds.Value
+        };
+
+        this._tcpServerService
+                .SendThroughChannel(
+                    message.ChannelId, 
+                    response
                         .ToJson(new JsonSerializerOptions { Converters = { this._transactionBaseConverter } })
                         .Compress());
     }

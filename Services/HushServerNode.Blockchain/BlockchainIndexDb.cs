@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using HushEcosystem.Model.Blockchain;
-using HushServerNode.Blockchain.Model;
+using HushEcosystem.Model.Rpc.Feeds;
 
 namespace HushServerNode.Blockchain;
 
