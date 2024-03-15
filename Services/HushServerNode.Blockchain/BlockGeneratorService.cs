@@ -56,6 +56,7 @@ public class BlockGeneratorService :
         var userProfile = new UserProfile
         {
             UserName ="AboimPinto Staker",
+            Issuer = this._applicationSettingsService.StackerInfo.PublicSigningAddress,
             UserPublicSigningAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress,
             UserPublicEncryptAddress = this._applicationSettingsService.StackerInfo.PublicEncryptAddress,
             IsPublic = false
