@@ -21,7 +21,7 @@ public class FeedIndexStrategy : IIndexStrategy
         {
             return true;
         }
-
+ 
         return false;
     }
 
@@ -59,7 +59,6 @@ public class FeedIndexStrategy : IIndexStrategy
                             FeedType = feed.FeedType,
                             FeedParticipant = feed.FeedParticipantPublicAddress,
                             FeedTitle = $"{profileName} (You)",
-                            // FeedTransaction = verifiedTransaction,
                             BlockIndex = verifiedTransaction.BlockIndex
                         });
                 }
@@ -82,7 +81,6 @@ public class FeedIndexStrategy : IIndexStrategy
                         FeedType = feed.FeedType,
                         FeedParticipant = feed.FeedParticipantPublicAddress,
                         FeedTitle = feed.FeedParticipantPublicAddress,
-                        // FeedTransaction = verifiedTransaction,
                         BlockIndex = verifiedTransaction.BlockIndex
                     }
                 });

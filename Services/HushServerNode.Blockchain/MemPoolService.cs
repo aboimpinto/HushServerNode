@@ -89,7 +89,8 @@ public class MemPoolService:
             var verifiedTransaction = new VerifiedTransaction
             {
                 SpecificTransaction = message.NewFeedRequest.Feed,
-                ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
+                ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress,
+                BlockIndex = this._blockchainService.CurrentBlockIndex
             };
 
             var hashJsonOptions = new JsonSerializerOptionsBuilder()
@@ -119,7 +120,8 @@ public class MemPoolService:
         var verifiedTransaction = new VerifiedTransaction
         {
             SpecificTransaction = message.SendMessageRequest.FeedMessage,
-            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
+            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress,
+            BlockIndex = this._blockchainService.CurrentBlockIndex
         };
 
         var hashJsonOptions = new JsonSerializerOptionsBuilder()
@@ -146,7 +148,8 @@ public class MemPoolService:
         var verifiedTransaction = new VerifiedTransaction
         {
             SpecificTransaction = message.UserProfileRequest.UserProfile,
-            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress
+            ValidatorAddress = this._applicationSettingsService.StackerInfo.PublicSigningAddress,
+            BlockIndex = this._blockchainService.CurrentBlockIndex
         };
         
         var hashJsonOptions = new JsonSerializerOptionsBuilder()

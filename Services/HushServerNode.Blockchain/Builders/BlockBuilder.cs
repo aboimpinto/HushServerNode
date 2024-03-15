@@ -72,7 +72,8 @@ public class BlockBuilder : IBlockBuilder
         this._verifiedRewardTransaction = new VerifiedTransaction
         {
             SpecificTransaction = this._rewardTransaction,
-            ValidatorAddress = stackerInfo.PublicSigningAddress
+            ValidatorAddress = stackerInfo.PublicSigningAddress,
+            BlockIndex = this._blockIndex
         };
 
         this._verifiedRewardTransaction.HashObject(hashTransactionJsonOptions);

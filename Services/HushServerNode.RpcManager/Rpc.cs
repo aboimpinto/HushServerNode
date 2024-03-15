@@ -4,7 +4,6 @@ using HushEcosystem;
 using HushEcosystem.Model;
 using HushEcosystem.Model.GlobalEvents;
 using HushEcosystem.Model.Rpc.Blockchain;
-using HushEcosystem.Model.Rpc.CommandDeserializeStrategies;
 using HushEcosystem.Model.Rpc.Feeds;
 using HushEcosystem.Model.Rpc.Handshake;
 using HushEcosystem.Model.Rpc.Profiles;
@@ -165,11 +164,12 @@ public class Rpc :
     {
         var feeds = this._blockchainIndexDb.Feeds
             .Where(x => x.Key == message.FeedsForAddressRequest.Address)
-            .Single();
+            .SelectMany(x => x.Value)
+            .Where(x => x.BlockIndex >= message.FeedsForAddressRequest.SinceBlockIndex);
 
         var response = new FeedsForAddressResponse
         {
-            FeedDefinitions = feeds.Value
+            FeedDefinitions = feeds.ToList()
         };
 
         this._tcpServerService
