@@ -15,7 +15,7 @@ public class UserProfileIndexStrategy : IIndexStrategy
 
     public bool CanHandle(VerifiedTransaction verifiedTransaction)
     {
-        if (verifiedTransaction.SpecificTransaction.TransactionId == UserProfile.TypeCode)
+        if (verifiedTransaction.SpecificTransaction.Id == UserProfile.TypeCode)
         {
             return true;
         }

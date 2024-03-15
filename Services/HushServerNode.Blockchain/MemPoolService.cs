@@ -69,7 +69,7 @@ public class MemPoolService:
         {
             var anyPersonalFeed = this._blockchainService
                 .ListTransactionsForAddress(message.NewFeedRequest.Feed.FeedParticipantPublicAddress, 0)
-                .Any(x => x.SpecificTransaction.TransactionId == Feed.TypeCode && ((Feed)x.SpecificTransaction).FeedType == FeedTypeEnum.Personal);
+                .Any(x => x.SpecificTransaction.Id == Feed.TypeCode && ((Feed)x.SpecificTransaction).FeedType == FeedTypeEnum.Personal);
 
             if (anyPersonalFeed)
             {

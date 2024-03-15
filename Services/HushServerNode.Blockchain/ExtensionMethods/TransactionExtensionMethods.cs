@@ -9,7 +9,7 @@ public static class TransactionExtensionMethods
     public static VerifiedTransaction GetRewardTransaction(this IEnumerable<VerifiedTransaction> transactions)
     {
         var verifiedRewardTransaction = transactions
-            .Where(x => x.SpecificTransaction.TransactionId == BlockCreationTransaction.TypeCode)
+            .Where(x => x.SpecificTransaction.Id == BlockCreationTransaction.TypeCode)
             .Single();
 
         return verifiedRewardTransaction;

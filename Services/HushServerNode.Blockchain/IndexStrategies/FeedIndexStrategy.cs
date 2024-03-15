@@ -17,7 +17,7 @@ public class FeedIndexStrategy : IIndexStrategy
 
     public bool CanHandle(VerifiedTransaction verifiedTransaction)
     {
-        if (verifiedTransaction.SpecificTransaction.TransactionId == Feed.TypeCode)
+        if (verifiedTransaction.SpecificTransaction.Id == Feed.TypeCode)
         {
             return true;
         }
@@ -59,7 +59,7 @@ public class FeedIndexStrategy : IIndexStrategy
                             FeedType = feed.FeedType,
                             FeedParticipant = feed.FeedParticipantPublicAddress,
                             FeedTitle = $"{profileName} (You)",
-                            FeedTransaction = verifiedTransaction,
+                            // FeedTransaction = verifiedTransaction,
                             BlockIndex = verifiedTransaction.BlockIndex
                         });
                 }
@@ -82,7 +82,7 @@ public class FeedIndexStrategy : IIndexStrategy
                         FeedType = feed.FeedType,
                         FeedParticipant = feed.FeedParticipantPublicAddress,
                         FeedTitle = feed.FeedParticipantPublicAddress,
-                        FeedTransaction = verifiedTransaction,
+                        // FeedTransaction = verifiedTransaction,
                         BlockIndex = verifiedTransaction.BlockIndex
                     }
                 });
