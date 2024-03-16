@@ -6,10 +6,15 @@ namespace HushServerNode.Blockchain;
 
 public class BlockchainIndexDb : IBlockchainIndexDb
 {
-    public Dictionary<string, double> AddressBalance { get; set; }
-    public Dictionary<string, List<VerifiedTransaction>> GroupedTransactions { get; set; }
+    public IDictionary<string, double> AddressBalance { get; set; }
+
+    public IDictionary<string, List<VerifiedTransaction>> GroupedTransactions { get; set; }
+
     public IList<UserProfile> Profiles { get; set; }
-    public Dictionary<string, List<FeedDefinition>> Feeds { get; set; }
+    
+    public IDictionary<string, List<FeedDefinition>> Feeds { get; set; }
+
+    public IDictionary<string, List<FeedMessageDefinition>> FeedMessages { get; set; }
 
     public BlockchainIndexDb()
     {
@@ -17,5 +22,6 @@ public class BlockchainIndexDb : IBlockchainIndexDb
         this.GroupedTransactions = new Dictionary<string, List<VerifiedTransaction>>();
         this.Profiles = new List<UserProfile>();
         this.Feeds = new Dictionary<string, List<FeedDefinition>>();
+        this.FeedMessages = new Dictionary<string, List<FeedMessageDefinition>>();
     }
 }

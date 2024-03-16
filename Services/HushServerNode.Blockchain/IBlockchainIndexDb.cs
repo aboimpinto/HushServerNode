@@ -6,11 +6,13 @@ namespace HushServerNode.Blockchain;
 
 public interface IBlockchainIndexDb
 {
-    Dictionary<string, double> AddressBalance { get; set; }
+    IDictionary<string, double> AddressBalance { get; set; }
 
-    Dictionary<string, List<VerifiedTransaction>> GroupedTransactions { get; set; }
+    IDictionary<string, List<VerifiedTransaction>> GroupedTransactions { get; set; }
 
     IList<UserProfile> Profiles { get; set; }
 
-    Dictionary<string, List<FeedDefinition>> Feeds { get; set; }
+    IDictionary<string, List<FeedDefinition>> Feeds { get; set; }
+
+    IDictionary<string, List<FeedMessageDefinition>> FeedMessages { get; set; }
 }

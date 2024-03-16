@@ -33,6 +33,7 @@ public static class BlockchainHostBuilder
             services.AddTransient<IIndexStrategy, GroupTransactionsByAddressIndexStrategy>();
             services.AddTransient<IIndexStrategy, UserProfileIndexStrategy>();
             services.AddTransient<IIndexStrategy, FeedIndexStrategy>();
+            services.AddTransient<IIndexStrategy, FeedMessageIndexStrategy>();
         });
 
         return builder;
