@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using HushEcosystem;
@@ -21,7 +22,8 @@ public class Rpc :
     IHandle<TransactionsWithAddressRequestedEvent>,
     IHandle<BalanceByAddressRequestedEvent>,
     IHandle<SearchAccountByPublicKeyRequestedEvent>,
-    IHandle<FeedsForAddressRequestedEvent>
+    IHandle<FeedsForAddressRequestedEvent>,
+    IHandle<FeedMessagesForAddressRequestedEvent>
 {
     private readonly ITcpServerService _tcpServerService;
     private readonly IBlockchainService _blockchainService;
@@ -162,15 +164,38 @@ public class Rpc :
 
     public void Handle(FeedsForAddressRequestedEvent message)
     {
-        var feeds = this._blockchainIndexDb.Feeds
-            .Where(x => x.Key == message.FeedsForAddressRequest.Address)
-            .SelectMany(x => x.Value)
-            .Where(x => x.BlockIndex >= message.FeedsForAddressRequest.SinceBlockIndex);
+        var userHasFeeds = this._blockchainIndexDb.FeedsOfParticipant.ContainsKey(message.FeedsForAddressRequest.Address);
 
-        var response = new FeedsForAddressResponse
+        var response = new FeedsForAddressResponse();
+        var feedsResponse = new List<IFeedDefinition>();
+        if (userHasFeeds)
         {
-            FeedDefinitions = feeds.ToList()
-        };
+            var feedIdsForUser = this._blockchainIndexDb.FeedsOfParticipant[message.FeedsForAddressRequest.Address];
+
+            // var feeds = this._blockchainIndexDb.Feeds.Where(x => x.Key)
+            foreach(var feedId in feedIdsForUser)
+            {
+                // var feed = this._blockchainIndexDb.Feeds[feedId];
+                // feedsResponse.Add(feed);
+            }
+
+        }
+        else
+        {
+            response.FeedDefinitions = feedsResponse;
+        }
+
+
+
+        // var feeds = this._blockchainIndexDb.Feeds
+        //     .Where(x => x.Key == message.FeedsForAddressRequest.Address)
+        //     .SelectMany(x => x.Value)
+        //     .Where(x => x.BlockIndex >= message.FeedsForAddressRequest.SinceBlockIndex);
+
+        // var response = new FeedsForAddressResponse
+        // {
+        //     FeedDefinitions = feeds.ToList()
+        // };
 
         this._tcpServerService
                 .SendThroughChannel(
@@ -178,5 +203,10 @@ public class Rpc :
                     response
                         .ToJson(new JsonSerializerOptions { Converters = { this._transactionBaseConverter } })
                         .Compress());
+    }
+
+    public void Handle(FeedMessagesForAddressRequestedEvent message)
+    {
+        // var feedMessages = this._blockchainIndexDb.FeedMessages[message.FeedMessagesForAddressRequest.]
     }
 }

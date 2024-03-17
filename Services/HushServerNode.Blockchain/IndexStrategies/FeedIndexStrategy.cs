@@ -53,66 +53,79 @@ public class FeedIndexStrategy : IIndexStrategy
             feedName = $"{feedParticipantProfile.UserName} (You)";
         }
 
-        // Check if there is already a Personal Feed for the user
-        
-        var hasPersonalFeed = this._blockchainIndexDb.Feeds.Values
-            .SelectMany(x => x)
-            .Where(x => x.FeedType == FeedTypeEnum.Personal)
-            .Any();
+        // check if the user has feeds 
+        var userHasFeeds = this._blockchainIndexDb.FeedsOfParticipant.ContainsKey(feed.FeedParticipantPublicAddress);
 
-        if (hasPersonalFeed)
+        if (userHasFeeds)
         {
-            var personalFeed = this._blockchainIndexDb.Feeds[feed.FeedParticipantPublicAddress]
-                .Single(x => x.FeedType == FeedTypeEnum.Personal);
-            
-            personalFeed.FeedTitle = feedName;
-            personalFeed.BlockIndex = blockIndex;
+            // list all feed for the user
+            var feedIds = this._blockchainIndexDb.FeedsOfParticipant[feed.FeedParticipantPublicAddress];
+
+            var feeds = this._blockchainIndexDb.Feeds.Where(x => feedIds.Contains(x.Id));
+
+            if (feeds.Any(x => x.FeedType == FeedTypeEnum.Personal))
+            {
+                // already have a personal feed
+                var personalFeed = feeds.Single(x => x.FeedType == FeedTypeEnum.Personal);
+                personalFeed.FeedTitle = feedName;
+            }
+            {
+                // don't have personal feed
+                var newPersonalFeed = new PersonalFeedDefinition
+                {
+                    FeedId = feed.FeedId,
+                    FeedOwner = feed.FeedParticipantPublicAddress,
+                    FeedTitle = feedName,
+                    BlockIndex = blockIndex
+                };
+
+                this._blockchainIndexDb.Feeds.Add(newPersonalFeed);
+                this._blockchainIndexDb.FeedsOfParticipant.Add(feed.FeedParticipantPublicAddress, new List<string> { feed.FeedId });
+            }
         }
         else
         {
-            var newPersonalFeed = new FeedDefinitionBuilder()
-                .WithFeedId(feed.FeedId)
-                .WithFeedType(feed.FeedType)
-                .WithParticipantAddress(feed.FeedParticipantPublicAddress)
-                .WithFeedTitle(feedName)
-                .WithBlockIndex(blockIndex)
-                .Build();
+            // user has no feeds. Create this one.
+            var newPersonalFeed = new PersonalFeedDefinition
+            {
+                FeedId = feed.FeedId,
+                FeedOwner = feed.FeedParticipantPublicAddress,
+                FeedTitle = feedName,
+                BlockIndex = blockIndex
+            };
 
-            this._blockchainIndexDb.Feeds.Add(feed.FeedParticipantPublicAddress, new List<FeedDefinition> { newPersonalFeed });
+            this._blockchainIndexDb.Feeds.Add(newPersonalFeed);
+            this._blockchainIndexDb.FeedsOfParticipant.Add(feed.FeedParticipantPublicAddress, new List<string> { feed.FeedId });
         }
-
-
+        
         
 
-        // // checks if the user has the feed 
-        //  if (this._blockchainIndexDb.Feeds.ContainsKey(feed.FeedParticipantPublicAddress))
+        // // Check if there is already a Personal Feed for the user
+        // var hasPersonalFeed = this._blockchainIndexDb.Feeds.Values
+        //     .SelectMany(x => x)
+        //     .Where(x => x.FeedType == FeedTypeEnum.Personal)
+        //     .Any();
+
+        // if (hasPersonalFeed)
         // {
-        //     // check if there is a personal feed already for the user
-        //     var hasPersonalFeed = this._blockchainIndexDb.Feeds[feed.FeedParticipantPublicAddress]
-        //         .Any(x => x.FeedType == FeedTypeEnum.Personal && x.FeedParticipant == feed.Issuer);
-
-        //     if (hasPersonalFeed)
-        //     {
-        //         // Personal feed already exist
-        //     }
-        //     else
-        //     {
-        //         var newPersonalFeed = new FeedDefinitionBuilder()
-        //                 .WithFeedId(feed.FeedId)
-        //                 .WithFeedType(feed.FeedType)
-        //                 .WithParticipantAddress(feed.FeedParticipantPublicAddress)
-        //                 .WithFeedTitle(feedName)
-        //                 .WithBlockIndex(blockIndex)
-        //                 .Build();
-
-        //         this._blockchainIndexDb.Feeds[feed.FeedParticipantPublicAddress]
-        //             .Add(newPersonalFeed);
-        //     }
+        //     var personalFeed = this._blockchainIndexDb.Feeds[feed.FeedParticipantPublicAddress]
+        //         .Single(x => x.FeedType == FeedTypeEnum.Personal);
+            
+        //     personalFeed.FeedTitle = feedName;
+        //     personalFeed.BlockIndex = blockIndex;
         // }
         // else
         // {
+        //     var newPersonalFeed = new PersonalFeedDefinition
+        //     {
+        //         FeedId = feed.FeedId,
+        //         FeedOwner = feed.FeedParticipantPublicAddress,
+        //         FeedTitle = feedName,
+        //         BlockIndex = blockIndex
+        //     };
 
+        //     this._blockchainIndexDb.Feeds.Add(feed.FeedId, new List<IFeedDefinition> { newPersonalFeed });
+        //     this._blockchainIndexDb.FeedsOfParticipant.Add(feed.FeedParticipantPublicAddress, new List<string> { feed.FeedId });
         // }
-
     }
 }

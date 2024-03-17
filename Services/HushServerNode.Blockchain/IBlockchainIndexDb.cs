@@ -12,7 +12,9 @@ public interface IBlockchainIndexDb
 
     IList<UserProfile> Profiles { get; set; }
 
-    IDictionary<string, List<FeedDefinition>> Feeds { get; set; }
+    IList<IFeedDefinition> Feeds { get; set; }
 
     IDictionary<string, List<FeedMessageDefinition>> FeedMessages { get; set; }
+
+    IDictionary<string, List<string>> FeedsOfParticipant { get; set; }
 }

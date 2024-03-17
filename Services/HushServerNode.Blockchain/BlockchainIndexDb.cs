@@ -12,16 +12,19 @@ public class BlockchainIndexDb : IBlockchainIndexDb
 
     public IList<UserProfile> Profiles { get; set; }
     
-    public IDictionary<string, List<FeedDefinition>> Feeds { get; set; }
+    public IList<IFeedDefinition> Feeds { get; set; }
 
     public IDictionary<string, List<FeedMessageDefinition>> FeedMessages { get; set; }
+
+    public IDictionary<string, List<string>> FeedsOfParticipant { get; set; }
 
     public BlockchainIndexDb()
     {
         this.AddressBalance = new Dictionary<string, double>();
         this.GroupedTransactions = new Dictionary<string, List<VerifiedTransaction>>();
         this.Profiles = new List<UserProfile>();
-        this.Feeds = new Dictionary<string, List<FeedDefinition>>();
+        this.Feeds = new List<IFeedDefinition>();
         this.FeedMessages = new Dictionary<string, List<FeedMessageDefinition>>();
+        this.FeedsOfParticipant = new Dictionary<string, List<string>>();
     }
 }
