@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Olimpo;
 using HushEcosystem;
+using Grpc.Core;
 
 namespace HushServerNode;
 
@@ -25,6 +26,7 @@ public class Program
             {
                 services.AddHostedService<Worker>();
             })
+            .RegisterGrpc()
             .RegisterBootstrapperManager()
             .RegisterEventAggregatorManager()
             .RegisterTcpServer()

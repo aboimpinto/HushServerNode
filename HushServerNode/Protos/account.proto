@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "HushServerNode";
+
+package rpcHush;
+
+// The greeting service definition.
+service HushAccount {
+  // Sends a greeting
+  rpc SetAccount (SetAccountRequest) returns (SetAccountReply);
+}
+
+// The request message containing the user's name.
+message SetAccountRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings.
+message SetAccountReply {
+  string message = 1;
+}
