@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Olimpo;
 using HushEcosystem;
-using Grpc.Core;
 
 namespace HushServerNode;
 
@@ -24,9 +23,10 @@ public class Program
             })
             .ConfigureServices((hostContext, services) => 
             {
+                services.AddSingleton<IBootstrapper, gRPCServerBootstraper>();
+
                 services.AddHostedService<Worker>();
             })
-            .RegisterGrpc()
             .RegisterBootstrapperManager()
             .RegisterEventAggregatorManager()
             .RegisterTcpServer()
@@ -34,6 +34,7 @@ public class Program
             .RegisterBlockchainService()
             .RegisterServerService()
             .RegisterRpcModel()
-            .RegisterRpcManager();
+            .RegisterRpcManager()
+            .RegisterGrpc();
 }
 

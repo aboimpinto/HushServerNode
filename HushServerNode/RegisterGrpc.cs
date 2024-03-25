@@ -1,4 +1,4 @@
-using Grpc.Core;
+using HushServerNode.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -10,15 +10,8 @@ public static class RegisterGrpcServer
     {
         builder.ConfigureServices((hostContext, services) =>
         {
-            var rcpServer = new Grpc.Core.Server
-            {
-                Services = { Greeter.BindService(new GreeterService()) },
-                Ports = {new ServerPort("localhost", 5000, ServerCredentials.Insecure)}
-            };
-
-            rcpServer.Start();
-
-            services.AddSingleton<Grpc.Core.Server>(rcpServer);
+            services.AddSingleton<HushProfile.HushProfileBase, HushProfileService>();
+            services.AddSingleton<HushBlockchain.HushBlockchainBase, HushBlockchainService>();
         });
 
         return builder;
